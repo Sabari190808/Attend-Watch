@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AttendWatch | Attendance Details</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background: #020817;
+    color: #eaf6ff;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ================= CYBER BACKGROUND ================= */
+
+#cyberCanvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -5;
+}
+
+.cyber-grid {
+    position: fixed;
+    inset: 0;
+    z-index: -4;
+    pointer-events: none;
+    background-image:
+        linear-gradient(rgba(0, 153, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 153, 255, 0.05) 1px, transparent 1px);
+    background-size: 45px 45px;
+}
+
+.cyber-scan {
+    position: fixed;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #00aaff,
+        #66e6ff,
+        #00aaff,
+        transparent
+    );
+    box-shadow: 0 0 15px #00aaff;
+    opacity: 0.5;
+    z-index: -2;
+    animation: scan 6s linear infinite;
+}
+
+@keyframes scan {
+    0% {
+        top: -5%;
+    }
+    100% {
+        top: 105%;
+    }
+}
+
+/* ================= NAVBAR ================= */
+
+.navbar {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 6%;
+    background: rgba(2, 10, 25, 0.82);
+    border-bottom: 1px solid rgba(0, 170, 255, 0.25);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.logo {
+    font-size: 21px;
+    font-weight: bold;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+}
+
+.logo span {
+    color: #00b7ff;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.session {
+    font-size: 13px;
+    color: #7ddfff;
+}
+
+.logout {
+    border: 1px solid #00aaff;
+    background: transparent;
+    color: #7ddfff;
+    padding: 9px 17px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.logout:hover {
+    background: #00aaff;
+    color: #00111d;
+    box-shadow: 0 0 18px rgba(0, 170, 255, 0.6);
+}
+
+/* ================= MAIN ================= */
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 45px auto 60px;
+}
+
+.page-heading {
+    margin-bottom: 28px;
+}
+
+.page-heading h1 {
+    font-size: 34px;
+    margin-bottom: 8px;
+}
+
+.page-heading h1 span {
+    color: #00b7ff;
+}
+
+.page-heading p {
+    color: #8da6ba;
+    font-size: 15px;
+}
+
+/* ================= SUMMARY CARDS ================= */
+
+.summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.card {
+    background: rgba(5, 20, 40, 0.78);
+    border: 1px solid rgba(0, 170, 255, 0.25);
+    border-radius: 14px;
+    padding: 24px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 25px rgba(0, 100, 180, 0.08);
+}
+
+.card:hover {
+    border-color: rgba(0, 190, 255, 0.55);
+}
+
+.card-title {
+    color: #8da6ba;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.card-value {
+    font-size: 31px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.good {
+    color: #35e6a1;
+}
+
+.warning {
+    color: #ffcc66;
+}
+
+/* ================= ATTENDANCE TABLE ================= */
+
+.section {
+    background: rgba(4, 17, 34, 0.82);
+    border: 1px solid rgba(0, 170, 255, 0.22);
+    border-radius: 16px;
+    padding: 26px;
+    margin-bottom: 25px;
+    backdrop-filter: blur(12px);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+}
+
+.section-header h2 {
+    font-size: 20px;
+}
+
+.section-header span {
+    font-size: 12px;
+    color: #6edcff;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+}
+
+thead {
+    background: rgba(0, 150, 255, 0.08);
+}
+
+th {
+    text-align: left;
+    padding: 14px;
+    color: #7ddfff;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    border-bottom: 1px solid rgba(0, 170, 255, 0.2);
+}
+
+td {
+    padding: 16px 14px;
+    color: #dcecff;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.subject {
+    font-weight: bold;
+}
+
+.progress-box {
+    width: 150px;
+}
+
+.progress-bg {
+    width: 100%;
+    height: 7px;
+    background: #10283d;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #008cff, #00d9ff);
+}
+
+.percentage {
+    margin-top: 5px;
+    font-size: 12px;
+    color: #8edfff;
+}
+
+.status {
+    display: inline-block;
+    padding: 6px 11px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.status.good {
+    background: rgba(53, 230, 161, 0.1);
+    border: 1px solid rgba(53, 230, 161, 0.35);
+}
+
+.status.warning {
+    background: rgba(255, 204, 102, 0.1);
+    border: 1px solid rgba(255, 204, 102, 0.35);
+}
+
+/* ================= HISTORY ================= */
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.present {
+    color: #35e6a1;
+    font-weight: bold;
+}
+
+.absent {
+    color: #ff6b7a;
+    font-weight: bold;
+}
+
+/* ================= ALERT ================= */
+
+.alert {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(255, 190, 70, 0.06);
+    border: 1px solid rgba(255, 190, 70, 0.25);
+    border-radius: 12px;
+    padding: 18px 20px;
+}
+
+.alert-icon {
+    font-size: 25px;
+}
+
+.alert h3 {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #ffd477;
+}
+
+.alert p {
+    font-size: 13px;
+    color: #9eb1c1;
+}
+
+/* ================= SECURITY ================= */
+
+.security {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.security-left h3 {
+    margin-bottom: 6px;
+}
+
+.security-left p {
+    color: #8da6ba;
+    font-size: 13px;
+}
+
+.secure-badge {
+    color: #35e6a1;
+    border: 1px solid rgba(53, 230, 161, 0.35);
+    background: rgba(53, 230, 161, 0.08);
+    padding: 9px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* ================= FOOTER ================= */
+
+footer {
+    text-align: center;
+    padding: 28px;
+    border-top: 1px solid rgba(0, 170, 255, 0.15);
+    color: #6e8497;
+    font-size: 12px;
+}
+
+footer strong {
+    color: #7ddfff;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 800px) {
+
+    .summary {
+        grid-template-columns: 1fr;
+    }
+
+    .navbar {
+        padding: 0 4%;
+    }
+
+    .session {
+        display: none;
+    }
+
+    .page-heading h1 {
+        font-size: 28px;
+    }
+
+    .container {
+        width: 94%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="cyberCanvas"></canvas>
+<div class="cyber-grid"></div>
+<div class="cyber-scan"></div>
+
+<!-- ================= NAVBAR ================= -->
+
+<nav class="navbar">
+
+    <div class="logo">
+        🛡️ Attend<span>Watch</span>
+    </div>
+
+    <div class="nav-right">
+        <div class="session">
+            🔐 Secure Session
+        </div>
+
+        <button class="logout" onclick="logout()">
+            Logout
+        </button>
+    </div>
+
+</nav>
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="container">
+
+    <div class="page-heading">
+
+        <h1>
+            Attendance <span>Details</span>
+        </h1>
+
+        <p>
+            View your subject-wise attendance and attendance history.
+        </p>
+
+    </div>
+
+
+    <!-- ================= SUMMARY ================= -->
+
+    <section class="summary">
+
+        <div class="card">
+
+            <div class="card-title">
+                OVERALL ATTENDANCE
+            </div>
+
+            <div class="card-value">
+                82%
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                CLASSES ATTENDED
+            </div>
+
+            <div class="card-value">
+                49 / 60
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                ATTENDANCE STATUS
+            </div>
+
+            <div class="card-value good">
+                Good
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= SUBJECT ATTENDANCE ================= -->
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <h2>
+                📊 Subject-wise Attendance
+            </h2>
+
+            <span>
+                Minimum Required: 75%
+            </span>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Subject</th>
+                        <th>Classes</th>
+                        <th>Attendance</th>
+                        <th>Progress</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    <tr>
+
+                        <td class="subject">
+                            Cyber Security
+                        </td>
+
+                        <td>
+                            18 / 20
+                        </td>
+
+                        <td>
+                            90%
+                        </td>
+
+                        <td>
+
+                            <div class="progress-box">
+
+                                <div class="progress-bg">
+                                    <div class="progress" style="width:90%;"></div>
+                                </div>
+
+                                <div class="percentage">
+                                    90%
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                        <td>
+                            <span class="status good">
+                                Good
+                            </span>
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td class="subject">
+                            Data Structures
+                        </td>
+
+                        <td>
+                            17 / 20
+                        </td>
+
+                        <td>
+                            85%
+                        </td>
+
+                        <td>
+
+                            <div class="progress-box">
+
+                                <div class="progress-bg">
+                                    <div class="progress" style="width:85%;"></div>
+                                </div>
+
+                                <div class="percentage">
+                                    85%
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                        <td>
+                            <span class="status good">
+                                Good
+                            </span>
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td class="subject">
+                            Database Management
+                        </td>
+
+                        <td>
+                            16 / 20
+                        </td>
+
+                        <td>
+                            80%
+                        </td>
+
+                        <td>
+
+                            <div class="progress-box">
+
+                                <div class="progress-bg">
+                                    <div class="progress" style="width:80%;"></div>
+                                </div>
+
+                                <div class="percentage">
+                                    80%
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                        <td>
+                            <span class="status good">
+                                Good
+                            </span>
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td class="subject">
+                            Computer Networks
+                        </td>
+
+                        <td>
+                            14 / 19
+                        </td>
+
+                        <td>
+                            74%
+                        </td>
+
+                        <td>
+
+                            <div class="progress-box">
+
+                                <div class="progress-bg">
+                                    <div class="progress" style="width:74%;"></div>
+                                </div>
+
+                                <div class="percentage">
+                                    74%
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                        <td>
+                            <span class="status warning">
+                                Shortage
+                            </span>
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= SHORTAGE ALERT ================= -->
+
+    <section class="alert">
+
+        <div class="alert-icon">
+            ⚠️
+        </div>
+
+        <div>
+
+            <h3>
+                Attendance Shortage Alert
+            </h3>
+
+            <p>
+                Computer Networks attendance is currently 74%.
+                The minimum required attendance is 75%.
+                Consider attending upcoming classes regularly.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= ATTENDANCE HISTORY ================= -->
+
+    <section class="section" style="margin-top:25px;">
+
+        <div class="section-header">
+
+            <h2>
+                🕒 Attendance History
+            </h2>
+
+            <span>
+                Recent Records
+            </span>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table class="history-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Subject</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    <tr>
+
+                        <td>
+                            Cyber Security
+                        </td>
+
+                        <td>
+                            Today
+                        </td>
+
+                        <td>
+                            09:00 AM
+                        </td>
+
+                        <td class="present">
+                            ● PRESENT
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            Data Structures
+                        </td>
+
+                        <td>
+                            Yesterday
+                        </td>
+
+                        <td>
+                            10:00 AM
+                        </td>
+
+                        <td class="present">
+                            ● PRESENT
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            Computer Networks
+                        </td>
+
+                        <td>
+                            Sep 23
+                        </td>
+
+                        <td>
+                            11:00 AM
+                        </td>
+
+                        <td class="absent">
+                            ● ABSENT
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            Database Management
+                        </td>
+
+                        <td>
+                            Sep 22
+                        </td>
+
+                        <td>
+                            02:00 PM
+                        </td>
+
+                        <td class="present">
+                            ● PRESENT
+                        </td>
+
+                    </tr>
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= SECURITY ================= -->
+
+    <section class="section security">
+
+        <div class="security-left">
+
+            <h3>
+                🛡️ Account Security
+            </h3>
+
+            <p>
+                Your attendance records are protected by AttendWatch security controls.
+            </p>
+
+        </div>
+
+        <div class="secure-badge">
+            ● SECURE
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+    <strong>🛡️ AttendWatch</strong>
+
+    <br><br>
+
+    Secure Attendance. Smarter Monitoring.
+
+    <br><br>
+
+    © 2026 AttendWatch | Cyber Security Mini Project
+
+</footer>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script>
+
+/* ================= LOGOUT ================= */
+
+function logout() {
+    window.location.href = "login.html";
+}
+
+
+/* ================= CYBER CANVAS ================= */
+
+const canvas = document.getElementById("cyberCanvas");
+const ctx = canvas.getContext("2d");
+
+let particles = [];
+let mouse = {
+    x: null,
+    y: null
+};
+
+function resizeCanvas() {
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+}
+
+resizeCanvas();
+
+window.addEventListener("resize", resizeCanvas);
+
+window.addEventListener("mousemove", function(e) {
+
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+
+});
+
+
+window.addEventListener("mouseleave", function() {
+
+    mouse.x = null;
+    mouse.y = null;
+
+});
+
+
+/* PARTICLES */
+
+const particleCount = 90;
+
+for (let i = 0; i < particleCount; i++) {
+
+    particles.push({
+
+        x: Math.random() * window.innerWidth,
+
+        y: Math.random() * window.innerHeight,
+
+        size: Math.random() * 2 + 0.5,
+
+        speedX: (Math.random() - 0.5) * 0.45,
+
+        speedY: (Math.random() - 0.5) * 0.45,
+
+        opacity: Math.random() * 0.7 + 0.2
+
+    });
+
+}
+
+
+/* DRAW */
+
+function animate() {
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    for (let i = 0; i < particles.length; i++) {
+
+        const p = particles[i];
+
+        p.x += p.speedX;
+        p.y += p.speedY;
+
+
+        if (p.x < 0 || p.x > canvas.width) {
+            p.speedX *= -1;
+        }
+
+        if (p.y < 0 || p.y > canvas.height) {
+            p.speedY *= -1;
+        }
+
+
+        /* Mouse interaction */
+
+        if (mouse.x !== null && mouse.y !== null) {
+
+            const dx = mouse.x - p.x;
+            const dy = mouse.y - p.y;
+
+            const distance = Math.sqrt(
+                dx * dx + dy * dy
+            );
+
+            if (distance < 120) {
+
+                p.x -= dx * 0.0015;
+                p.y -= dy * 0.0015;
+
+            }
+
+        }
+
+
+        ctx.beginPath();
+
+        ctx.arc(
+            p.x,
+            p.y,
+            p.size,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fillStyle =
+            `rgba(0, 180, 255, ${p.opacity})`;
+
+        ctx.fill();
+
+
+        /* CONNECTING LINES */
+
+        for (let j = i + 1; j < particles.length; j++) {
+
+            const p2 = particles[j];
+
+            const dx = p.x - p2.x;
+            const dy = p.y - p2.y;
+
+            const distance =
+                Math.sqrt(dx * dx + dy * dy);
+
+
+            if (distance < 115) {
+
+                const opacity =
+                    0.16 * (1 - distance / 115);
+
+                ctx.beginPath();
+
+                ctx.moveTo(
+                    p.x,
+                    p.y
+                );
+
+                ctx.lineTo(
+                    p2.x,
+                    p2.y
+                );
+
+                ctx.strokeStyle =
+                    `rgba(0, 160, 255, ${opacity})`;
+
+                ctx.lineWidth = 0.6;
+
+                ctx.stroke();
+
+            }
+
+        }
+
+    }
+
+
+    requestAnimationFrame(animate);
+
+}
+
+animate();
+
+</script>
+
+</body>
+</html>

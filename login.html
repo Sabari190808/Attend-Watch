@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AttendWatch | Login</title>
+
+    <style>
+
+        /* =========================
+           RESET
+        ========================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+
+            font-family: Arial, Helvetica, sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 20% 30%,
+                    rgba(0, 166, 255, 0.15),
+                    transparent 35%
+                ),
+                #07111f;
+
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 30px;
+        }
+
+
+        /* =========================
+           MAIN CONTAINER
+        ========================= */
+
+        .login-container {
+
+            width: 100%;
+            max-width: 1050px;
+
+            min-height: 620px;
+
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+
+            background: #0b1b2d;
+
+            border: 1px solid #1b3a56;
+
+            border-radius: 22px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 30px 80px rgba(0, 0, 0, 0.5);
+        }
+
+
+        /* =========================
+           LEFT SIDE
+        ========================= */
+
+        .login-info {
+
+            padding: 55px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #0b2238,
+                    #071523
+                );
+        }
+
+        .brand {
+
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            font-size: 23px;
+
+            font-weight: bold;
+        }
+
+        .brand-icon {
+            font-size: 30px;
+        }
+
+
+        .info-content {
+
+            margin-top: 30px;
+        }
+
+        .security-label {
+
+            display: inline-block;
+
+            padding: 7px 13px;
+
+            border-radius: 20px;
+
+            border: 1px solid #23587c;
+
+            color: #36d9ff;
+
+            background: rgba(22, 137, 215, 0.08);
+
+            font-size: 12px;
+
+            letter-spacing: 1px;
+
+            margin-bottom: 22px;
+        }
+
+        .info-content h1 {
+
+            font-size: 43px;
+
+            line-height: 1.15;
+
+            margin-bottom: 20px;
+        }
+
+        .info-content h1 span {
+            color: #36d9ff;
+        }
+
+        .info-content p {
+
+            color: #8fa6bb;
+
+            font-size: 15px;
+
+            max-width: 420px;
+
+            line-height: 1.8;
+        }
+
+
+        /* =========================
+           SECURITY FEATURES
+        ========================= */
+
+        .security-features {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 14px;
+
+            margin-top: 40px;
+        }
+
+        .security-item {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+
+            color: #a8bacd;
+
+            font-size: 13px;
+        }
+
+        .security-icon {
+
+            width: 34px;
+            height: 34px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 9px;
+
+            background: #102d46;
+
+            border: 1px solid #1e4e6d;
+        }
+
+
+        /* =========================
+           LOGIN SIDE
+        ========================= */
+
+        .login-box {
+
+            padding: 55px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+            background: #0c1c2e;
+        }
+
+        .login-heading {
+
+            margin-bottom: 30px;
+        }
+
+        .login-heading h2 {
+
+            font-size: 30px;
+
+            margin-bottom: 8px;
+        }
+
+        .login-heading p {
+
+            color: #8098ae;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           FORM
+        ========================= */
+
+        .form-group {
+
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+
+            display: block;
+
+            color: #b9c9d9;
+
+            font-size: 13px;
+
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+
+            position: relative;
+        }
+
+        .input-icon {
+
+            position: absolute;
+
+            left: 15px;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            color: #648097;
+        }
+
+        input,
+        select {
+
+            width: 100%;
+
+            padding: 14px 15px 14px 45px;
+
+            background: #091827;
+
+            border: 1px solid #23425d;
+
+            border-radius: 9px;
+
+            color: white;
+
+            font-size: 14px;
+
+            outline: none;
+
+            transition: 0.3s;
+        }
+
+        select {
+            padding-left: 15px;
+        }
+
+        input::placeholder {
+            color: #536b80;
+        }
+
+        input:focus,
+        select:focus {
+
+            border-color: #36d9ff;
+
+            box-shadow:
+                0 0 0 3px rgba(54, 217, 255, 0.08);
+        }
+
+        option {
+            background: #0c1c2e;
+        }
+
+
+        /* =========================
+           LOGIN OPTIONS
+        ========================= */
+
+        .login-options {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            margin: 5px 0 25px;
+
+            font-size: 12px;
+        }
+
+        .remember {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            color: #8299ad;
+        }
+
+        .remember input {
+
+            width: auto;
+
+            accent-color: #1689d7;
+        }
+
+        .forgot {
+
+            color: #36d9ff;
+        }
+
+
+        /* =========================
+           LOGIN BUTTON
+        ========================= */
+
+        .login-button {
+
+            width: 100%;
+
+            border: none;
+
+            padding: 14px;
+
+            border-radius: 9px;
+
+            background: linear-gradient(
+                90deg,
+                #1379c0,
+                #1689d7
+            );
+
+            color: white;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+        }
+
+        .login-button:hover {
+
+            background: linear-gradient(
+                90deg,
+                #1689d7,
+                #36d9ff
+            );
+
+            color: #06101c;
+
+            transform: translateY(-2px);
+        }
+
+
+        /* =========================
+           DEMO ACCESS
+        ========================= */
+
+        .demo-title {
+
+            text-align: center;
+
+            color: #536d83;
+
+            font-size: 11px;
+
+            margin: 25px 0 15px;
+
+            letter-spacing: 1px;
+        }
+
+        .demo-buttons {
+
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 8px;
+        }
+
+        .demo-btn {
+
+            padding: 9px 5px;
+
+            border-radius: 7px;
+
+            border: 1px solid #23435e;
+
+            background: #0a1827;
+
+            color: #91a6ba;
+
+            font-size: 11px;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+        }
+
+        .demo-btn:hover {
+
+            border-color: #36d9ff;
+
+            color: #36d9ff;
+        }
+
+
+        /* =========================
+           BACK HOME
+        ========================= */
+
+        .back-home {
+
+            display: block;
+
+            text-align: center;
+
+            margin-top: 25px;
+
+            color: #667e93;
+
+            font-size: 12px;
+
+            transition: 0.3s;
+        }
+
+        .back-home:hover {
+            color: #36d9ff;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 850px) {
+
+            .login-container {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .login-info {
+
+                display: none;
+            }
+
+            .login-box {
+
+                padding: 40px 30px;
+            }
+        }
+
+
+        /* ===== CYBER ANIMATED BACKGROUND ONLY ===== */
+        #cyberCanvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -3;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at 50% 45%, rgba(0, 91, 150, 0.18), transparent 45%),
+                #07111f;
+        }
+
+        .cyber-grid {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            pointer-events: none;
+            opacity: .35;
+            background-image:
+                linear-gradient(rgba(54,217,255,.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(54,217,255,.07) 1px, transparent 1px);
+            background-size: 45px 45px;
+            animation: cyberGridMove 9s linear infinite;
+        }
+
+        @keyframes cyberGridMove {
+            from { background-position: 0 0; }
+            to { background-position: 45px 45px; }
+        }
+
+        .cyber-scan {
+            position: fixed;
+            left: 0;
+            top: -4px;
+            width: 100%;
+            height: 2px;
+            z-index: -1;
+            pointer-events: none;
+            background: linear-gradient(90deg, transparent, rgba(54,217,255,.15), #36d9ff, rgba(54,217,255,.15), transparent);
+            box-shadow: 0 0 14px #36d9ff, 0 0 30px rgba(54,217,255,.55);
+            opacity: .7;
+            animation: cyberScan 5s linear infinite;
+        }
+
+        @keyframes cyberScan {
+            from { transform: translateY(0); }
+            to { transform: translateY(100vh); }
+        }
+
+        .cyber-binary {
+            position: fixed;
+            top: -180px;
+            z-index: -1;
+            pointer-events: none;
+            color: rgba(54,217,255,.28);
+            font-family: monospace;
+            font-size: 12px;
+            line-height: 19px;
+            white-space: pre;
+            text-shadow: 0 0 8px rgba(54,217,255,.7);
+            animation: binaryFall linear infinite;
+        }
+
+        .cyber-binary.b1 { left: 4%; animation-duration: 9s; }
+        .cyber-binary.b2 { left: 17%; animation-duration: 12s; animation-delay: -4s; }
+        .cyber-binary.b3 { left: 31%; animation-duration: 10s; animation-delay: -2s; }
+        .cyber-binary.b4 { left: 57%; animation-duration: 13s; animation-delay: -6s; }
+        .cyber-binary.b5 { left: 74%; animation-duration: 9s; animation-delay: -3s; }
+        .cyber-binary.b6 { left: 91%; animation-duration: 11s; animation-delay: -7s; }
+
+        @keyframes binaryFall {
+            from { transform: translateY(-180px); }
+            to { transform: translateY(115vh); }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+
+    <!-- Animated cyber-security background -->
+    <canvas id="cyberCanvas"></canvas>
+    <div class="cyber-grid"></div>
+    <div class="cyber-scan"></div>
+
+    <div class="cyber-binary b1">010101
+101010
+001101
+110010
+010101
+101100
+001011</div>
+
+    <div class="cyber-binary b2">101010
+001101
+110101
+010010
+101101
+001011
+110010</div>
+
+    <div class="cyber-binary b3">110010
+010101
+101010
+001101
+110101
+010010
+101101</div>
+
+    <div class="cyber-binary b4">010101
+110010
+001101
+101010
+010010
+110101
+001011</div>
+
+    <div class="cyber-binary b5">101101
+010010
+110101
+001101
+101010
+010101
+110010</div>
+
+    <div class="cyber-binary b6">001011
+110101
+010101
+101010
+110010
+001101
+010010</div>
+
+    <div class="login-container">
+
+
+        <!-- ================= LEFT ================= -->
+
+        <section class="login-info">
+
+            <div>
+
+                <div class="brand">
+
+                    <span class="brand-icon">🛡️</span>
+
+                    <span>AttendWatch</span>
+
+                </div>
+
+
+                <div class="info-content">
+
+                    <div class="security-label">
+                        🔐 SECURE PORTAL
+                    </div>
+
+                    <h1>
+                        Welcome<br>
+                        <span>Back.</span>
+                    </h1>
+
+                    <p>
+                        Sign in to access your personalized
+                        attendance dashboard and securely
+                        manage academic attendance records.
+                    </p>
+
+
+                    <div class="security-features">
+
+                        <div class="security-item">
+
+                            <div class="security-icon">
+                                🔐
+                            </div>
+
+                            Secure Authentication
+
+                        </div>
+
+
+                        <div class="security-item">
+
+                            <div class="security-icon">
+                                👥
+                            </div>
+
+                            Role-Based Access Control
+
+                        </div>
+
+
+                        <div class="security-item">
+
+                            <div class="security-icon">
+                                🛡️
+                            </div>
+
+                            Protected Academic Records
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <small style="color:#526a80;">
+                AttendWatch • Cyber Security Mini Project
+            </small>
+
+        </section>
+
+
+        <!-- ================= RIGHT ================= -->
+
+        <section class="login-box">
+
+
+            <div class="login-heading">
+
+                <h2>
+                    Sign in to AttendWatch
+                </h2>
+
+                <p>
+                    Enter your credentials to continue.
+                </p>
+
+            </div>
+
+
+            <!-- LOGIN FORM -->
+
+            <form onsubmit="loginUser(event)">
+
+
+                <!-- USERNAME -->
+
+                <div class="form-group">
+
+                    <label for="username">
+                        Username
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">
+                            👤
+                        </span>
+
+                        <input
+                            type="text"
+                            id="username"
+                            placeholder="Enter your username"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div class="form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">
+                            🔒
+                        </span>
+
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="Enter your password"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- ROLE -->
+
+                <div class="form-group">
+
+                    <label for="role">
+                        Login As
+                    </label>
+
+                    <select id="role">
+
+                        <option value="student">
+                            Student
+                        </option>
+
+                        <option value="faculty">
+                            Faculty
+                        </option>
+
+                        <option value="admin">
+                            Administrator
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- OPTIONS -->
+
+                <div class="login-options">
+
+                    <label class="remember">
+
+                        <input
+                            type="checkbox"
+                        >
+
+                        Remember me
+
+                    </label>
+
+                    <a href="#" class="forgot">
+                        Forgot password?
+                    </a>
+
+                </div>
+
+
+                <!-- BUTTON -->
+
+                <button
+                    type="submit"
+                    class="login-button"
+                >
+                    Sign In →
+                </button>
+
+
+            </form>
+
+
+            <!-- DEMO -->
+
+            <div class="demo-title">
+                DEMO ACCESS
+            </div>
+
+
+            <div class="demo-buttons">
+
+                <button
+                    class="demo-btn"
+                    type="button"
+                    onclick="fillDemo('student')"
+                >
+                    👨‍🎓 Student
+                </button>
+
+                <button
+                    class="demo-btn"
+                    type="button"
+                    onclick="fillDemo('faculty')"
+                >
+                    👨‍🏫 Faculty
+                </button>
+
+                <button
+                    class="demo-btn"
+                    type="button"
+                    onclick="fillDemo('admin')"
+                >
+                    👨‍💼 Admin
+                </button>
+
+            </div>
+
+
+            <a
+                href="index.html"
+                class="back-home"
+            >
+                ← Back to Home
+            </a>
+
+
+        </section>
+
+    </div>
+
+
+    <script>
+        /* ===== CYBER NETWORK BACKGROUND ONLY ===== */
+        const cyberCanvas = document.getElementById("cyberCanvas");
+        const cyberCtx = cyberCanvas.getContext("2d");
+        let particles = [];
+        let mouse = { x: null, y: null };
+
+        function resizeCyberCanvas() {
+            cyberCanvas.width = window.innerWidth;
+            cyberCanvas.height = window.innerHeight;
+        }
+
+        function createParticles() {
+            particles = [];
+            const count = Math.min(105, Math.max(55,
+                Math.floor((window.innerWidth * window.innerHeight) / 15000)));
+
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * cyberCanvas.width,
+                    y: Math.random() * cyberCanvas.height,
+                    vx: (Math.random() - 0.5) * 0.42,
+                    vy: (Math.random() - 0.5) * 0.42,
+                    r: Math.random() * 1.7 + 0.6,
+                    pulse: Math.random() * Math.PI * 2
+                });
+            }
+        }
+
+        window.addEventListener("resize", () => {
+            resizeCyberCanvas();
+            createParticles();
+        });
+
+        window.addEventListener("mousemove", e => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+
+        window.addEventListener("mouseleave", () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        function animateCyberBackground() {
+            cyberCtx.clearRect(0, 0, cyberCanvas.width, cyberCanvas.height);
+
+            for (const p of particles) {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.pulse += 0.025;
+
+                if (p.x < 0 || p.x > cyberCanvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > cyberCanvas.height) p.vy *= -1;
+
+                const glow = 1 + Math.sin(p.pulse) * 0.35;
+
+                cyberCtx.beginPath();
+                cyberCtx.arc(p.x, p.y, p.r * glow, 0, Math.PI * 2);
+                cyberCtx.fillStyle = "rgba(54,217,255,.8)";
+                cyberCtx.shadowBlur = 12;
+                cyberCtx.shadowColor = "#36d9ff";
+                cyberCtx.fill();
+                cyberCtx.shadowBlur = 0;
+            }
+
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const a = particles[i];
+                    const b = particles[j];
+                    const dx = a.x - b.x;
+                    const dy = a.y - b.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 125) {
+                        cyberCtx.beginPath();
+                        cyberCtx.moveTo(a.x, a.y);
+                        cyberCtx.lineTo(b.x, b.y);
+                        cyberCtx.strokeStyle =
+                            `rgba(54,217,255,${(1 - distance / 125) * .32})`;
+                        cyberCtx.lineWidth = .8;
+                        cyberCtx.stroke();
+                    }
+                }
+            }
+
+            if (mouse.x !== null && mouse.y !== null) {
+                for (const p of particles) {
+                    const dx = p.x - mouse.x;
+                    const dy = p.y - mouse.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 170) {
+                        cyberCtx.beginPath();
+                        cyberCtx.moveTo(p.x, p.y);
+                        cyberCtx.lineTo(mouse.x, mouse.y);
+                        cyberCtx.strokeStyle =
+                            `rgba(54,217,255,${1 - distance / 170})`;
+                        cyberCtx.lineWidth = 1;
+                        cyberCtx.stroke();
+                    }
+                }
+            }
+
+            requestAnimationFrame(animateCyberBackground);
+        }
+
+        resizeCyberCanvas();
+        createParticles();
+        animateCyberBackground();
+    </script>
+
+
+<script>
+function loginUser(event) {
+    event.preventDefault();
+
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value;
+    const role = document.getElementById("role").value;
+
+    if (role === "student" && username === "sabari" && password === "sabari@123") {
+        window.location.href = "dashboard.html";
+    }
+    else if (role === "faculty" && username === "faculty" && password === "faculty@123") {
+        window.location.href = "faculty-dashboard.html";
+    }
+    else if (role === "admin" && username === "admin" && password === "admin@123") {
+        window.location.href = "admin-dashboard.html";
+    }
+    else {
+        alert("Invalid username, password, or role!\n\nStudent: sabari / sabari@123\nFaculty: faculty / faculty@123\nAdmin: admin / admin@123");
+    }
+}
+
+function fillDemo(role) {
+    const username = document.getElementById("username");
+    const password = document.getElementById("password");
+    const roleSelect = document.getElementById("role");
+
+    roleSelect.value = role;
+
+    if (role === "student") {
+        username.value = "sabari";
+        password.value = "sabari@123";
+    }
+    else if (role === "faculty") {
+        username.value = "faculty";
+        password.value = "faculty@123";
+    }
+    else if (role === "admin") {
+        username.value = "admin";
+        password.value = "admin@123";
+    }
+}
+</script>
+
+</body>
+
+</html>

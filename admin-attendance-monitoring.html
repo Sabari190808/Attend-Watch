@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>
+    AttendWatch | Attendance Monitoring
+</title>
+
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+
+body{
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:#06111f;
+
+    color:#fff;
+
+    min-height:100vh;
+
+    overflow-x:hidden;
+
+}
+
+
+#cyberCanvas{
+
+    position:fixed;
+
+    inset:0;
+
+    width:100%;
+
+    height:100%;
+
+    z-index:-3;
+
+    background:#06111f;
+
+}
+
+
+.cyber-grid{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:-2;
+
+    pointer-events:none;
+
+    background-image:
+
+        linear-gradient(
+            rgba(0,183,255,.035)
+            1px,
+            transparent 1px
+        ),
+
+        linear-gradient(
+            90deg,
+            rgba(0,183,255,.035)
+            1px,
+            transparent 1px
+        );
+
+    background-size:45px 45px;
+
+}
+
+
+.scan-line{
+
+    position:fixed;
+
+    left:0;
+
+    top:-5px;
+
+    width:100%;
+
+    height:2px;
+
+    z-index:-1;
+
+    background:
+        rgba(0,195,255,.45);
+
+    box-shadow:
+        0 0 18px
+        rgba(0,195,255,.7);
+
+    animation:
+        scan 6s linear infinite;
+
+    pointer-events:none;
+
+}
+
+
+@keyframes scan{
+
+    0%{
+        top:0;
+    }
+
+    100%{
+        top:100%;
+    }
+
+}
+
+
+
+/* NAVBAR */
+
+.navbar{
+
+    width:100%;
+
+    padding:20px 6%;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    border-bottom:
+        1px solid
+        rgba(64,190,255,.18);
+
+    background:
+        rgba(4,16,30,.72);
+
+    backdrop-filter:
+        blur(12px);
+
+}
+
+
+.brand{
+
+    font-size:22px;
+
+    font-weight:bold;
+
+}
+
+
+.brand span{
+
+    color:#20c8ff;
+
+}
+
+
+.nav-right{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+
+}
+
+
+.session{
+
+    color:#54d7ff;
+
+    font-size:13px;
+
+    letter-spacing:1px;
+
+}
+
+
+.back{
+
+    color:#fff;
+
+    text-decoration:none;
+
+    border:
+        1px solid
+        rgba(80,200,255,.35);
+
+    padding:9px 17px;
+
+    border-radius:8px;
+
+    transition:.3s;
+
+}
+
+
+.back:hover{
+
+    background:
+        rgba(24,199,255,.14);
+
+}
+
+
+
+/* MAIN */
+
+.container{
+
+    width:88%;
+
+    max-width:1200px;
+
+    margin:auto;
+
+    padding:50px 0;
+
+}
+
+
+.tag{
+
+    display:inline-block;
+
+    color:#18c7ff;
+
+    border:
+        1px solid
+        rgba(24,199,255,.35);
+
+    background:
+        rgba(24,199,255,.06);
+
+    padding:8px 15px;
+
+    border-radius:20px;
+
+    font-size:12px;
+
+    letter-spacing:1.5px;
+
+    margin-bottom:18px;
+
+}
+
+
+h1{
+
+    font-size:40px;
+
+    margin-bottom:10px;
+
+}
+
+
+.subtitle{
+
+    color:#91aeca;
+
+    font-size:15px;
+
+    line-height:1.7;
+
+    margin-bottom:30px;
+
+}
+
+
+
+/* CARD */
+
+.card{
+
+    background:
+        rgba(8,28,47,.82);
+
+    border:
+        1px solid
+        rgba(63,177,226,.22);
+
+    border-radius:14px;
+
+    padding:24px;
+
+    margin-bottom:25px;
+
+    backdrop-filter:
+        blur(10px);
+
+}
+
+
+.section-title{
+
+    font-size:20px;
+
+    margin-bottom:18px;
+
+}
+
+
+
+/* TABLE */
+
+.table-wrap{
+
+    width:100%;
+
+    overflow-x:auto;
+
+}
+
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+
+th,
+td{
+
+    padding:15px 12px;
+
+    text-align:left;
+
+    border-bottom:
+        1px solid
+        rgba(130,180,210,.12);
+
+    font-size:14px;
+
+}
+
+
+th{
+
+    color:#55d7ff;
+
+    font-size:12px;
+
+    letter-spacing:1px;
+
+}
+
+
+td{
+
+    color:#d5e6f2;
+
+}
+
+
+.badge{
+
+    display:inline-block;
+
+    padding:5px 9px;
+
+    border-radius:20px;
+
+    font-size:11px;
+
+}
+
+
+.good{
+
+    color:#45e6a3;
+
+    border:
+        1px solid
+        rgba(69,230,163,.25);
+
+    background:
+        rgba(69,230,163,.06);
+
+}
+
+
+.warn{
+
+    color:#ffcc57;
+
+    border:
+        1px solid
+        rgba(255,204,87,.25);
+
+    background:
+        rgba(255,204,87,.06);
+
+}
+
+
+
+/* BUTTON */
+
+.btn{
+
+    display:inline-block;
+
+    padding:10px 16px;
+
+    border-radius:7px;
+
+    border:
+        1px solid
+        rgba(24,199,255,.4);
+
+    color:#39d0ff;
+
+    background:
+        rgba(24,199,255,.06);
+
+    cursor:pointer;
+
+    text-decoration:none;
+
+    transition:.3s;
+
+}
+
+
+.btn:hover{
+
+    background:
+        rgba(24,199,255,.14);
+
+}
+
+
+
+/* INFO */
+
+.info-text{
+
+    color:#91aeca;
+
+    line-height:1.7;
+
+    font-size:14px;
+
+}
+
+
+
+/* FOOTER */
+
+footer{
+
+    text-align:center;
+
+    padding:30px 20px;
+
+    color:#66829b;
+
+    font-size:13px;
+
+    border-top:
+        1px solid
+        rgba(64,190,255,.12);
+
+}
+
+
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+    .navbar{
+
+        padding:17px 5%;
+
+    }
+
+
+    .session{
+
+        display:none;
+
+    }
+
+
+    .container{
+
+        width:92%;
+
+        padding-top:35px;
+
+    }
+
+
+    h1{
+
+        font-size:30px;
+
+    }
+
+
+    .table-wrap{
+
+        overflow-x:auto;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<canvas id="cyberCanvas"></canvas>
+
+<div class="cyber-grid"></div>
+
+<div class="scan-line"></div>
+
+
+
+<!-- NAVBAR -->
+
+<nav class="navbar">
+
+
+    <div class="brand">
+
+        🛡️ Attend<span>Watch</span>
+
+    </div>
+
+
+    <div class="nav-right">
+
+        <span class="session">
+
+            Secure Admin Session
+
+        </span>
+
+
+        <a
+            href="admin-dashboard.html"
+            class="back"
+        >
+
+            ← Admin Dashboard
+
+        </a>
+
+    </div>
+
+</nav>
+
+
+
+<!-- MAIN -->
+
+<main class="container">
+
+
+    <span class="tag">
+
+        ATTENDANCE MONITORING
+
+    </span>
+
+
+    <h1>
+
+        Attendance Monitoring
+
+    </h1>
+
+
+    <p class="subtitle">
+
+        Review attendance records, monitor shortages,
+        and track academic attendance activity.
+
+    </p>
+
+
+
+    <!-- ATTENDANCE TABLE -->
+
+    <div class="card">
+
+
+        <div class="section-title">
+
+            📊 Student Attendance Overview
+
+        </div>
+
+
+        <div class="table-wrap">
+
+
+            <table>
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>STUDENT</th>
+
+                        <th>ID</th>
+
+                        <th>ATTENDED</th>
+
+                        <th>TOTAL</th>
+
+                        <th>ATTENDANCE</th>
+
+                        <th>STATUS</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    <tr>
+
+                        <td>
+                            Sabari
+                        </td>
+
+                        <td>
+                            CS001
+                        </td>
+
+                        <td>
+                            18
+                        </td>
+
+                        <td>
+                            20
+                        </td>
+
+                        <td>
+                            90%
+                        </td>
+
+                        <td>
+
+                            <span class="badge good">
+                                GOOD
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+
+
+                    <tr>
+
+                        <td>
+                            Arjun
+                        </td>
+
+                        <td>
+                            CS002
+                        </td>
+
+                        <td>
+                            17
+                        </td>
+
+                        <td>
+                            20
+                        </td>
+
+                        <td>
+                            85%
+                        </td>
+
+                        <td>
+
+                            <span class="badge good">
+                                GOOD
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+
+
+                    <tr>
+
+                        <td>
+                            Priya
+                        </td>
+
+                        <td>
+                            CS003
+                        </td>
+
+                        <td>
+                            15
+                        </td>
+
+                        <td>
+                            20
+                        </td>
+
+                        <td>
+                            75%
+                        </td>
+
+                        <td>
+
+                            <span class="badge good">
+                                GOOD
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+
+
+                    <tr>
+
+                        <td>
+                            Kavin
+                        </td>
+
+                        <td>
+                            CS004
+                        </td>
+
+                        <td>
+                            14
+                        </td>
+
+                        <td>
+                            20
+                        </td>
+
+                        <td>
+                            70%
+                        </td>
+
+                        <td>
+
+                            <span class="badge warn">
+                                SHORTAGE
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+
+
+                    <tr>
+
+                        <td>
+                            Divya
+                        </td>
+
+                        <td>
+                            CS005
+                        </td>
+
+                        <td>
+                            19
+                        </td>
+
+                        <td>
+                            20
+                        </td>
+
+                        <td>
+                            95%
+                        </td>
+
+                        <td>
+
+                            <span class="badge good">
+                                GOOD
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- SHORTAGE MONITORING -->
+
+    <div class="card">
+
+
+        <div class="section-title">
+
+            ⚠️ Shortage Monitoring
+
+        </div>
+
+
+        <p class="info-text">
+
+            Students with attendance below the
+            minimum required 75% can be identified
+            and monitored through the shortage
+            monitoring system.
+
+        </p>
+
+
+        <br>
+
+
+        <button
+            class="btn"
+            onclick="shortageReport()"
+        >
+
+            View Shortage Report →
+
+        </button>
+
+    </div>
+
+
+</main>
+
+
+
+<!-- FOOTER -->
+
+<footer>
+
+    🛡️ AttendWatch
+
+    <br><br>
+
+    Secure Attendance. Smarter Monitoring.
+
+    <br><br>
+
+    © 2026 AttendWatch | Cyber Security Mini Project
+
+</footer>
+
+
+
+<script>
+
+
+/* SHORTAGE REPORT */
+
+function shortageReport(){
+
+    alert(
+
+        "Shortage Report\n\n" +
+
+        "Kavin (CS004)\n" +
+
+        "Attendance: 70%\n" +
+
+        "Status: SHORTAGE\n\n" +
+
+        "Minimum Required: 75%"
+
+    );
+
+}
+
+
+
+/* CYBER BACKGROUND */
+
+const canvas =
+    document.getElementById("cyberCanvas");
+
+
+const ctx =
+    canvas.getContext("2d");
+
+
+let particles = [];
+
+
+let mouse = {
+
+    x:null,
+
+    y:null,
+
+    radius:150
+
+};
+
+
+
+function resizeCanvas(){
+
+    canvas.width =
+        innerWidth;
+
+    canvas.height =
+        innerHeight;
+
+}
+
+
+addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+
+resizeCanvas();
+
+
+
+const count =
+    Math.min(
+
+        95,
+
+        Math.floor(
+
+            innerWidth *
+            innerHeight /
+            13000
+
+        )
+
+    );
+
+
+
+for(
+
+    let i=0;
+
+    i<count;
+
+    i++
+
+){
+
+    particles.push({
+
+        x:
+            Math.random() *
+            canvas.width,
+
+        y:
+            Math.random() *
+            canvas.height,
+
+        vx:
+            (Math.random()-.5)*.45,
+
+        vy:
+            (Math.random()-.5)*.45,
+
+        size:
+            Math.random()*2+.7
+
+    });
+
+}
+
+
+
+addEventListener(
+
+    "mousemove",
+
+    e=>{
+
+        mouse.x =
+            e.clientX;
+
+        mouse.y =
+            e.clientY;
+
+    }
+
+);
+
+
+
+addEventListener(
+
+    "mouseleave",
+
+    ()=>{
+
+        mouse.x=null;
+
+        mouse.y=null;
+
+    }
+
+);
+
+
+
+function draw(){
+
+    ctx.clearRect(
+
+        0,
+
+        0,
+
+        canvas.width,
+
+        canvas.height
+
+    );
+
+
+
+    for(
+
+        const p of particles
+
+    ){
+
+        p.x += p.vx;
+
+        p.y += p.vy;
+
+
+
+        if(
+
+            p.x < 0 ||
+
+            p.x > canvas.width
+
+        ){
+
+            p.vx *= -1;
+
+        }
+
+
+
+        if(
+
+            p.y < 0 ||
+
+            p.y > canvas.height
+
+        ){
+
+            p.vy *= -1;
+
+        }
+
+
+
+        if(
+
+            mouse.x !== null
+
+        ){
+
+            let dx =
+                mouse.x-p.x;
+
+            let dy =
+                mouse.y-p.y;
+
+            let d =
+                Math.hypot(
+                    dx,
+                    dy
+                );
+
+
+            if(
+
+                d < mouse.radius
+
+            ){
+
+                p.x -=
+                    dx*.002;
+
+                p.y -=
+                    dy*.002;
+
+            }
+
+        }
+
+
+
+        ctx.beginPath();
+
+
+        ctx.arc(
+
+            p.x,
+
+            p.y,
+
+            p.size,
+
+            0,
+
+            Math.PI*2
+
+        );
+
+
+        ctx.fillStyle =
+            "rgba(40,190,255,.75)";
+
+
+        ctx.fill();
+
+    }
+
+
+
+    for(
+
+        let i=0;
+
+        i<particles.length;
+
+        i++
+
+    ){
+
+        for(
+
+            let j=i+1;
+
+            j<particles.length;
+
+            j++
+
+        ){
+
+            let dx =
+                particles[i].x -
+                particles[j].x;
+
+            let dy =
+                particles[i].y -
+                particles[j].y;
+
+            let d =
+                Math.hypot(
+                    dx,
+                    dy
+                );
+
+
+
+            if(
+
+                d < 125
+
+            ){
+
+                ctx.beginPath();
+
+
+                ctx.moveTo(
+
+                    particles[i].x,
+
+                    particles[i].y
+
+                );
+
+
+                ctx.lineTo(
+
+                    particles[j].x,
+
+                    particles[j].y
+
+                );
+
+
+                ctx.strokeStyle =
+
+                    "rgba(0,174,255," +
+
+                    ((1-d/125)*.25) +
+
+                    ")";
+
+
+                ctx.stroke();
+
+            }
+
+        }
+
+    }
+
+
+    requestAnimationFrame(draw);
+
+}
+
+
+draw();
+
+</script>
+
+
+</body>
+
+</html>

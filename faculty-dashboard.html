@@ -1,0 +1,2095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AttendWatch | Faculty Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: #020b18;
+            color: #eaf6ff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* =========================
+           CYBER BACKGROUND
+        ========================= */
+
+        #cyberCanvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -3;
+            background:
+                radial-gradient(
+                    circle at 50% 30%,
+                    rgba(0, 132, 255, 0.12),
+                    transparent 45%
+                ),
+                #020b18;
+        }
+
+        .grid {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            pointer-events: none;
+
+            background-image:
+                linear-gradient(
+                    rgba(0, 153, 255, 0.035) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(0, 153, 255, 0.035) 1px,
+                    transparent 1px
+                );
+
+            background-size: 45px 45px;
+
+            mask-image: linear-gradient(
+                to bottom,
+                transparent,
+                black 20%,
+                black 80%,
+                transparent
+            );
+        }
+
+        .scan-line {
+            position: fixed;
+            top: -10%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(0, 191, 255, 0.8),
+                transparent
+            );
+
+            box-shadow: 0 0 15px #00bfff;
+
+            animation: scan 7s linear infinite;
+
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% {
+                top: -10%;
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                top: 110%;
+                opacity: 0;
+            }
+        }
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        nav {
+            width: 100%;
+            padding: 20px 7%;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            background: rgba(2, 11, 24, 0.78);
+
+            border-bottom: 1px solid rgba(0, 174, 255, 0.15);
+
+            backdrop-filter: blur(12px);
+
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            font-size: 22px;
+            font-weight: 700;
+
+            color: #ffffff;
+        }
+
+        .logo span {
+            color: #00bfff;
+        }
+
+        .session {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            color: #8fb6ce;
+            font-size: 14px;
+        }
+
+        .secure-dot {
+            width: 9px;
+            height: 9px;
+            background: #00ff9d;
+            border-radius: 50%;
+
+            box-shadow: 0 0 12px #00ff9d;
+
+            animation: pulse 1.8s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(0.75);
+            }
+        }
+
+        .logout {
+            text-decoration: none;
+
+            color: #9fdcff;
+
+            border: 1px solid rgba(0, 191, 255, 0.3);
+
+            padding: 9px 17px;
+
+            border-radius: 8px;
+
+            transition: 0.3s;
+        }
+
+        .logout:hover {
+            color: white;
+            border-color: #00bfff;
+
+            box-shadow:
+                0 0 18px rgba(0, 191, 255, 0.2);
+
+            transform: translateY(-2px);
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        main {
+            width: 86%;
+            max-width: 1250px;
+
+            margin: auto;
+
+            padding: 55px 0 80px;
+        }
+
+        .welcome {
+            margin-bottom: 35px;
+        }
+
+        .welcome .tag {
+            display: inline-block;
+
+            padding: 7px 13px;
+
+            border-radius: 20px;
+
+            border: 1px solid rgba(0, 191, 255, 0.25);
+
+            background: rgba(0, 128, 255, 0.08);
+
+            color: #00bfff;
+
+            font-size: 12px;
+            font-weight: 600;
+
+            letter-spacing: 1.5px;
+
+            margin-bottom: 16px;
+        }
+
+        .welcome h1 {
+            font-size: clamp(30px, 5vw, 48px);
+
+            line-height: 1.15;
+
+            margin-bottom: 12px;
+
+            color: #ffffff;
+        }
+
+        .welcome h1 span {
+            color: #00bfff;
+
+            text-shadow:
+                0 0 20px rgba(0, 191, 255, 0.35);
+        }
+
+        .welcome p {
+            color: #8faec1;
+
+            font-size: 16px;
+
+            max-width: 700px;
+
+            line-height: 1.7;
+        }
+
+        /* =========================
+           STAT CARDS
+        ========================= */
+
+        .stats {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(9, 31, 54, 0.92),
+                    rgba(3, 16, 31, 0.88)
+                );
+
+            border: 1px solid rgba(0, 191, 255, 0.15);
+
+            border-radius: 16px;
+
+            padding: 24px;
+
+            transition: 0.3s;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: "";
+
+            position: absolute;
+
+            width: 90px;
+            height: 90px;
+
+            right: -30px;
+            top: -30px;
+
+            border-radius: 50%;
+
+            background: rgba(0, 191, 255, 0.06);
+
+            box-shadow:
+                0 0 40px rgba(0, 191, 255, 0.1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+
+            border-color:
+                rgba(0, 191, 255, 0.45);
+
+            box-shadow:
+                0 12px 35px rgba(0, 0, 0, 0.25),
+                0 0 20px rgba(0, 191, 255, 0.08);
+        }
+
+        .stat-icon {
+            font-size: 25px;
+
+            margin-bottom: 15px;
+        }
+
+        .stat-title {
+            color: #7896a8;
+
+            font-size: 13px;
+
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 29px;
+
+            font-weight: 700;
+
+            color: white;
+        }
+
+        .stat-sub {
+            margin-top: 7px;
+
+            color: #00bfff;
+
+            font-size: 12px;
+        }
+
+        /* =========================
+           SECTION HEADER
+        ========================= */
+
+        .section-header {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 18px;
+        }
+
+        .section-header h2 {
+            font-size: 21px;
+
+            color: white;
+        }
+
+        .section-header p {
+            color: #68889c;
+
+            font-size: 13px;
+        }
+
+        /* =========================
+           ACTION CARDS
+        ========================= */
+
+        .actions {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 40px;
+        }
+
+        .action-card {
+            padding: 25px;
+
+            border-radius: 16px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(7, 29, 51, 0.94),
+                    rgba(2, 14, 28, 0.95)
+                );
+
+            border: 1px solid rgba(0, 191, 255, 0.14);
+
+            transition: 0.3s;
+
+            position: relative;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+
+            border-color:
+                rgba(0, 191, 255, 0.4);
+
+            box-shadow:
+                0 0 25px rgba(0, 191, 255, 0.08);
+        }
+
+        .action-icon {
+            width: 50px;
+            height: 50px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 12px;
+
+            background: rgba(0, 174, 255, 0.08);
+
+            border: 1px solid rgba(0, 191, 255, 0.18);
+
+            font-size: 23px;
+
+            margin-bottom: 18px;
+        }
+
+        .action-card h3 {
+            margin-bottom: 8px;
+
+            color: white;
+
+            font-size: 17px;
+        }
+
+        .action-card p {
+            color: #7795a8;
+
+            line-height: 1.6;
+
+            font-size: 13px;
+
+            margin-bottom: 18px;
+        }
+
+        .action-btn {
+            border: none;
+
+            cursor: pointer;
+
+            text-decoration: none;
+
+            display: inline-block;
+
+            padding: 10px 15px;
+
+            border-radius: 8px;
+
+            color: #dff8ff;
+
+            background: rgba(0, 160, 255, 0.1);
+
+            border: 1px solid rgba(0, 191, 255, 0.25);
+
+            font-size: 13px;
+
+            transition: 0.3s;
+        }
+
+        .action-btn:hover {
+            background: rgba(0, 174, 255, 0.2);
+
+            border-color: #00bfff;
+
+            box-shadow:
+                0 0 15px rgba(0, 191, 255, 0.15);
+        }
+
+        /* =========================
+           ATTENDANCE TABLE
+        ========================= */
+
+        .table-card {
+            background:
+                rgba(4, 20, 36, 0.88);
+
+            border:
+                1px solid rgba(0, 191, 255, 0.14);
+
+            border-radius: 16px;
+
+            overflow: hidden;
+
+            margin-bottom: 35px;
+        }
+
+        .table-top {
+            padding: 21px 24px;
+
+            border-bottom:
+                1px solid rgba(0, 191, 255, 0.1);
+
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-top h2 {
+            font-size: 18px;
+        }
+
+        .course-badge {
+            color: #00bfff;
+
+            font-size: 12px;
+
+            padding: 6px 11px;
+
+            border-radius: 20px;
+
+            background: rgba(0, 191, 255, 0.08);
+
+            border: 1px solid rgba(0, 191, 255, 0.15);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 650px;
+        }
+
+        th,
+        td {
+            padding: 17px 22px;
+
+            text-align: left;
+
+            border-bottom:
+                1px solid rgba(0, 191, 255, 0.07);
+        }
+
+        th {
+            color: #63869c;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+        }
+
+        td {
+            color: #b7cfdd;
+
+            font-size: 14px;
+        }
+
+        tbody tr {
+            transition: 0.25s;
+        }
+
+        tbody tr:hover {
+            background:
+                rgba(0, 174, 255, 0.045);
+        }
+
+        .student-name {
+            color: white;
+
+            font-weight: 600;
+        }
+
+        .status {
+            display: inline-block;
+
+            padding: 5px 10px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+
+            font-weight: 600;
+        }
+
+        .present {
+            color: #00ffae;
+
+            background: rgba(0, 255, 174, 0.08);
+
+            border:
+                1px solid rgba(0, 255, 174, 0.15);
+        }
+
+        .absent {
+            color: #ff7080;
+
+            background: rgba(255, 80, 100, 0.08);
+
+            border:
+                1px solid rgba(255, 80, 100, 0.15);
+        }
+
+        /* =========================
+           SECURITY BOX
+        ========================= */
+
+        .security-box {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            padding: 22px 25px;
+
+            border-radius: 15px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(0, 255, 157, 0.045),
+                    rgba(0, 191, 255, 0.035)
+                );
+
+            border:
+                1px solid rgba(0, 255, 157, 0.13);
+
+            margin-bottom: 55px;
+        }
+
+        .security-left {
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+        }
+
+        .security-icon {
+            width: 42px;
+            height: 42px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 11px;
+
+            background: rgba(0, 255, 157, 0.07);
+
+            border:
+                1px solid rgba(0, 255, 157, 0.14);
+        }
+
+        .security-left h3 {
+            font-size: 14px;
+
+            margin-bottom: 4px;
+        }
+
+        .security-left p {
+            color: #658294;
+
+            font-size: 12px;
+        }
+
+        .secure-status {
+            color: #00ff9d;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            letter-spacing: 1px;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            border-top:
+                1px solid rgba(0, 191, 255, 0.1);
+
+            padding: 28px 7%;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            color: #557487;
+
+            font-size: 12px;
+        }
+
+        footer strong {
+            color: #8fb6ca;
+        }
+
+        /* =========================
+           MODAL
+        ========================= */
+
+        .modal {
+            position: fixed;
+
+            inset: 0;
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+                rgba(0, 5, 12, 0.78);
+
+            backdrop-filter: blur(8px);
+
+            z-index: 100;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-box {
+            width: 90%;
+
+            max-width: 850px;
+
+            max-height: 85vh;
+
+            overflow-y: auto;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #071d31,
+                    #03111f
+                );
+
+            border:
+                1px solid rgba(0, 191, 255, 0.3);
+
+            border-radius: 18px;
+
+            padding: 28px;
+
+            box-shadow:
+                0 0 60px rgba(0, 0, 0, 0.5),
+                0 0 30px rgba(0, 191, 255, 0.08);
+        }
+
+        .modal-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 22px;
+        }
+
+        .modal-header h2 {
+            color: white;
+
+            font-size: 21px;
+        }
+
+        .close {
+            cursor: pointer;
+
+            color: #89a9ba;
+
+            font-size: 24px;
+
+            border: none;
+
+            background: none;
+        }
+
+        .close:hover {
+            color: #00bfff;
+        }
+
+        .attendance-row {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding: 15px 0;
+
+            border-bottom:
+                1px solid rgba(0, 191, 255, 0.08);
+        }
+
+        .attendance-row:last-child {
+            border-bottom: none;
+        }
+
+        .attendance-student strong {
+            display: block;
+
+            color: white;
+
+            margin-bottom: 4px;
+        }
+
+        .attendance-student span {
+            color: #638294;
+
+            font-size: 12px;
+        }
+
+        .attendance-controls {
+            display: flex;
+
+            gap: 8px;
+        }
+
+        .mark-btn {
+            cursor: pointer;
+
+            padding: 8px 13px;
+
+            border-radius: 7px;
+
+            border: 1px solid rgba(0, 191, 255, 0.2);
+
+            background: rgba(0, 191, 255, 0.06);
+
+            color: #a9dff3;
+
+            font-size: 12px;
+
+            transition: 0.25s;
+        }
+
+        .mark-btn:hover {
+            border-color: #00bfff;
+
+            background: rgba(0, 191, 255, 0.15);
+        }
+
+        .mark-btn.selected-present {
+            color: #00ffae;
+
+            border-color: #00ffae;
+
+            background: rgba(0, 255, 174, 0.08);
+        }
+
+        .mark-btn.selected-absent {
+            color: #ff7080;
+
+            border-color: #ff7080;
+
+            background: rgba(255, 80, 100, 0.08);
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 950px) {
+            .stats {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .actions {
+                grid-template-columns:
+                    1fr 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            nav {
+                padding: 16px 5%;
+            }
+
+            .session span {
+                display: none;
+            }
+
+            main {
+                width: 90%;
+
+                padding-top: 40px;
+            }
+
+            .stats,
+            .actions {
+                grid-template-columns: 1fr;
+            }
+
+            .security-box {
+                align-items: flex-start;
+
+                flex-direction: column;
+            }
+
+            footer {
+                flex-direction: column;
+
+                gap: 10px;
+
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- CYBER BACKGROUND -->
+    <canvas id="cyberCanvas"></canvas>
+    <div class="grid"></div>
+    <div class="scan-line"></div>
+
+
+    <!-- NAVBAR -->
+    <nav>
+
+        <div class="logo">
+            🛡️ Attend<span>Watch</span>
+        </div>
+
+        <div class="session">
+
+            <div class="secure-dot"></div>
+
+            <span>Secure Faculty Session</span>
+
+            <a href="login.html" class="logout">
+                Logout
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <!-- MAIN CONTENT -->
+    <main>
+
+        <!-- WELCOME -->
+        <section class="welcome">
+
+            <div class="tag">
+                FACULTY PORTAL
+            </div>
+
+            <h1>
+                Welcome back,
+                <span>Faculty 👋</span>
+            </h1>
+
+            <p>
+                Manage attendance, monitor student records,
+                and identify attendance shortages securely
+                from your faculty dashboard.
+            </p>
+
+        </section>
+
+
+        <!-- STATISTICS -->
+        <section class="stats">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    👥
+                </div>
+
+                <div class="stat-title">
+                    Total Students
+                </div>
+
+                <div class="stat-value">
+                    60
+                </div>
+
+                <div class="stat-sub">
+                    Assigned Students
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    📚
+                </div>
+
+                <div class="stat-title">
+                    Assigned Courses
+                </div>
+
+                <div class="stat-value">
+                    2
+                </div>
+
+                <div class="stat-sub">
+                    Current Semester
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    📊
+                </div>
+
+                <div class="stat-title">
+                    Class Average
+                </div>
+
+                <div class="stat-value">
+                    82%
+                </div>
+
+                <div class="stat-sub">
+                    Overall Attendance
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    ⚠️
+                </div>
+
+                <div class="stat-title">
+                    Shortage Students
+                </div>
+
+                <div class="stat-value">
+                    7
+                </div>
+
+                <div class="stat-sub">
+                    Below 75%
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- QUICK ACTIONS -->
+        <div class="section-header">
+
+            <div>
+                <h2>Faculty Actions</h2>
+            </div>
+
+            <p>
+                Manage academic attendance
+            </p>
+
+        </div>
+
+
+        <section class="actions">
+
+            <!-- MARK ATTENDANCE -->
+            <div class="action-card">
+
+                <div class="action-icon">
+                    📋
+                </div>
+
+                <h3>
+                    Mark Attendance
+                </h3>
+
+                <p>
+                    Select your course and mark
+                    Present or Absent for enrolled
+                    students.
+                </p>
+
+                <button
+                    class="action-btn"
+                    onclick="openAttendance()"
+                >
+                    Mark Attendance →
+                </button>
+
+            </div>
+
+
+            <!-- STUDENT ATTENDANCE -->
+            <div class="action-card">
+
+                <div class="action-icon">
+                    👥
+                </div>
+
+                <h3>
+                    Student Attendance
+                </h3>
+
+                <p>
+                    View student attendance records
+                    and monitor individual attendance
+                    percentages.
+                </p>
+
+                <a
+                    href="#student-table"
+                    class="action-btn"
+                >
+                    View Students →
+                </a>
+
+            </div>
+
+
+            <!-- REPORT -->
+            <div class="action-card">
+
+                <div class="action-icon">
+                    📈
+                </div>
+
+                <h3>
+                    Attendance Reports
+                </h3>
+
+                <p>
+                    Review course attendance and
+                    identify students who require
+                    attention.
+                </p>
+
+                <a
+                    href="#student-table"
+                    class="action-btn"
+                >
+                    View Report →
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- STUDENT TABLE -->
+        <div
+            class="section-header"
+            id="student-table"
+        >
+
+            <div>
+                <h2>
+                    Student Attendance Overview
+                </h2>
+            </div>
+
+            <p>
+                Current Semester
+            </p>
+
+        </div>
+
+
+        <section class="table-card">
+
+            <div class="table-top">
+
+                <h2>
+                    Cyber Security
+                </h2>
+
+                <div class="course-badge">
+                    COURSE: CS301
+                </div>
+
+            </div>
+
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Student</th>
+                            <th>Register No.</th>
+                            <th>Classes</th>
+                            <th>Attendance</th>
+                            <th>Status</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+
+                            <td class="student-name">
+                                Sabari
+                            </td>
+
+                            <td>
+                                CS001
+                            </td>
+
+                            <td>
+                                18 / 20
+                            </td>
+
+                            <td>
+                                90%
+                            </td>
+
+                            <td>
+                                <span class="status present">
+                                    GOOD
+                                </span>
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td class="student-name">
+                                Arjun
+                            </td>
+
+                            <td>
+                                CS002
+                            </td>
+
+                            <td>
+                                17 / 20
+                            </td>
+
+                            <td>
+                                85%
+                            </td>
+
+                            <td>
+                                <span class="status present">
+                                    GOOD
+                                </span>
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td class="student-name">
+                                Priya
+                            </td>
+
+                            <td>
+                                CS003
+                            </td>
+
+                            <td>
+                                15 / 20
+                            </td>
+
+                            <td>
+                                75%
+                            </td>
+
+                            <td>
+                                <span class="status present">
+                                    GOOD
+                                </span>
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td class="student-name">
+                                Kavin
+                            </td>
+
+                            <td>
+                                CS004
+                            </td>
+
+                            <td>
+                                14 / 20
+                            </td>
+
+                            <td>
+                                70%
+                            </td>
+
+                            <td>
+                                <span class="status absent">
+                                    SHORTAGE
+                                </span>
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td class="student-name">
+                                Divya
+                            </td>
+
+                            <td>
+                                CS005
+                            </td>
+
+                            <td>
+                                19 / 20
+                            </td>
+
+                            <td>
+                                95%
+                            </td>
+
+                            <td>
+                                <span class="status present">
+                                    GOOD
+                                </span>
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- SECURITY -->
+        <div class="security-box">
+
+            <div class="security-left">
+
+                <div class="security-icon">
+                    🔐
+                </div>
+
+                <div>
+
+                    <h3>
+                        Faculty Account Security
+                    </h3>
+
+                    <p>
+                        Your faculty session is protected
+                        by AttendWatch security controls.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="secure-status">
+                ● SECURE
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer>
+
+        <div>
+            🛡️ <strong>AttendWatch</strong>
+        </div>
+
+        <div>
+            Secure Attendance. Smarter Monitoring.
+        </div>
+
+        <div>
+            © 2026 AttendWatch | Cyber Security Mini Project
+        </div>
+
+    </footer>
+
+
+    <!-- ATTENDANCE MODAL -->
+    <div
+        class="modal"
+        id="attendanceModal"
+    >
+
+        <div class="modal-box">
+
+            <div class="modal-header">
+
+                <h2>
+                    📋 Mark Attendance
+                </h2>
+
+                <button
+                    class="close"
+                    onclick="closeAttendance()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <p
+                style="
+                color:#7896a8;
+                font-size:13px;
+                margin-bottom:20px;
+                "
+            >
+                Cyber Security — CS301
+                &nbsp; | &nbsp;
+                Current Class
+            </p>
+
+
+            <!-- STUDENT 1 -->
+            <div class="attendance-row">
+
+                <div class="attendance-student">
+
+                    <strong>
+                        Sabari
+                    </strong>
+
+                    <span>
+                        CS001
+                    </span>
+
+                </div>
+
+                <div class="attendance-controls">
+
+                    <button
+                        class="mark-btn"
+                        onclick="markPresent(this)"
+                    >
+                        Present
+                    </button>
+
+                    <button
+                        class="mark-btn"
+                        onclick="markAbsent(this)"
+                    >
+                        Absent
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- STUDENT 2 -->
+            <div class="attendance-row">
+
+                <div class="attendance-student">
+
+                    <strong>
+                        Arjun
+                    </strong>
+
+                    <span>
+                        CS002
+                    </span>
+
+                </div>
+
+                <div class="attendance-controls">
+
+                    <button
+                        class="mark-btn"
+                        onclick="markPresent(this)"
+                    >
+                        Present
+                    </button>
+
+                    <button
+                        class="mark-btn"
+                        onclick="markAbsent(this)"
+                    >
+                        Absent
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- STUDENT 3 -->
+            <div class="attendance-row">
+
+                <div class="attendance-student">
+
+                    <strong>
+                        Priya
+                    </strong>
+
+                    <span>
+                        CS003
+                    </span>
+
+                </div>
+
+                <div class="attendance-controls">
+
+                    <button
+                        class="mark-btn"
+                        onclick="markPresent(this)"
+                    >
+                        Present
+                    </button>
+
+                    <button
+                        class="mark-btn"
+                        onclick="markAbsent(this)"
+                    >
+                        Absent
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- STUDENT 4 -->
+            <div class="attendance-row">
+
+                <div class="attendance-student">
+
+                    <strong>
+                        Kavin
+                    </strong>
+
+                    <span>
+                        CS004
+                    </span>
+
+                </div>
+
+                <div class="attendance-controls">
+
+                    <button
+                        class="mark-btn"
+                        onclick="markPresent(this)"
+                    >
+                        Present
+                    </button>
+
+                    <button
+                        class="mark-btn"
+                        onclick="markAbsent(this)"
+                    >
+                        Absent
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- STUDENT 5 -->
+            <div class="attendance-row">
+
+                <div class="attendance-student">
+
+                    <strong>
+                        Divya
+                    </strong>
+
+                    <span>
+                        CS005
+                    </span>
+
+                </div>
+
+                <div class="attendance-controls">
+
+                    <button
+                        class="mark-btn"
+                        onclick="markPresent(this)"
+                    >
+                        Present
+                    </button>
+
+                    <button
+                        class="mark-btn"
+                        onclick="markAbsent(this)"
+                    >
+                        Absent
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================= -->
+
+    <script>
+
+        /* =========================
+           CYBER PARTICLE NETWORK
+        ========================= */
+
+        const canvas =
+            document.getElementById("cyberCanvas");
+
+        const ctx =
+            canvas.getContext("2d");
+
+        let particles = [];
+
+        let mouse = {
+            x: null,
+            y: null
+        };
+
+
+        function resizeCanvas() {
+
+            canvas.width =
+                window.innerWidth;
+
+            canvas.height =
+                window.innerHeight;
+
+        }
+
+
+        resizeCanvas();
+
+
+        window.addEventListener(
+            "resize",
+            resizeCanvas
+        );
+
+
+        window.addEventListener(
+            "mousemove",
+            function(event) {
+
+                mouse.x =
+                    event.clientX;
+
+                mouse.y =
+                    event.clientY;
+
+            }
+        );
+
+
+        window.addEventListener(
+            "mouseout",
+            function() {
+
+                mouse.x = null;
+                mouse.y = null;
+
+            }
+        );
+
+
+        class Particle {
+
+            constructor() {
+
+                this.x =
+                    Math.random() *
+                    canvas.width;
+
+                this.y =
+                    Math.random() *
+                    canvas.height;
+
+                this.size =
+                    Math.random() * 1.8 + 0.5;
+
+                this.speedX =
+                    (Math.random() - 0.5) *
+                    0.35;
+
+                this.speedY =
+                    (Math.random() - 0.5) *
+                    0.35;
+
+            }
+
+
+            update() {
+
+                this.x +=
+                    this.speedX;
+
+                this.y +=
+                    this.speedY;
+
+
+                if (
+                    this.x < 0 ||
+                    this.x > canvas.width
+                ) {
+                    this.speedX *= -1;
+                }
+
+
+                if (
+                    this.y < 0 ||
+                    this.y > canvas.height
+                ) {
+                    this.speedY *= -1;
+                }
+
+
+                if (mouse.x !== null) {
+
+                    const dx =
+                        this.x - mouse.x;
+
+                    const dy =
+                        this.y - mouse.y;
+
+                    const distance =
+                        Math.sqrt(
+                            dx * dx +
+                            dy * dy
+                        );
+
+
+                    if (distance < 120) {
+
+                        this.x +=
+                            dx / distance *
+                            0.5;
+
+                        this.y +=
+                            dy / distance *
+                            0.5;
+
+                    }
+
+                }
+
+            }
+
+
+            draw() {
+
+                ctx.beginPath();
+
+                ctx.arc(
+                    this.x,
+                    this.y,
+                    this.size,
+                    0,
+                    Math.PI * 2
+                );
+
+                ctx.fillStyle =
+                    "rgba(0,191,255,0.7)";
+
+                ctx.fill();
+
+            }
+
+        }
+
+
+        function createParticles() {
+
+            particles = [];
+
+            const count =
+                Math.min(
+                    95,
+                    Math.floor(
+                        window.innerWidth / 15
+                    )
+                );
+
+
+            for (
+                let i = 0;
+                i < count;
+                i++
+            ) {
+
+                particles.push(
+                    new Particle()
+                );
+
+            }
+
+        }
+
+
+        createParticles();
+
+
+        function connectParticles() {
+
+            for (
+                let i = 0;
+                i < particles.length;
+                i++
+            ) {
+
+                for (
+                    let j = i + 1;
+                    j < particles.length;
+                    j++
+                ) {
+
+                    const dx =
+                        particles[i].x -
+                        particles[j].x;
+
+                    const dy =
+                        particles[i].y -
+                        particles[j].y;
+
+                    const distance =
+                        Math.sqrt(
+                            dx * dx +
+                            dy * dy
+                        );
+
+
+                    if (distance < 120) {
+
+                        const opacity =
+                            1 -
+                            distance / 120;
+
+
+                        ctx.beginPath();
+
+                        ctx.strokeStyle =
+                            `rgba(0,191,255,${opacity * 0.18})`;
+
+                        ctx.lineWidth = 1;
+
+                        ctx.moveTo(
+                            particles[i].x,
+                            particles[i].y
+                        );
+
+                        ctx.lineTo(
+                            particles[j].x,
+                            particles[j].y
+                        );
+
+                        ctx.stroke();
+
+                    }
+
+                }
+
+            }
+
+        }
+
+
+        function animate() {
+
+            ctx.clearRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+
+            particles.forEach(
+                particle => {
+
+                    particle.update();
+
+                    particle.draw();
+
+                }
+            );
+
+
+            connectParticles();
+
+
+            requestAnimationFrame(
+                animate
+            );
+
+        }
+
+
+        animate();
+
+
+        /* =========================
+           ATTENDANCE MODAL
+        ========================= */
+
+        function openAttendance() {
+
+            document
+                .getElementById("attendanceModal")
+                .classList.add("active");
+
+        }
+
+
+        function closeAttendance() {
+
+            document
+                .getElementById("attendanceModal")
+                .classList.remove("active");
+
+        }
+
+
+        window.addEventListener(
+            "click",
+            function(event) {
+
+                const modal =
+                    document.getElementById(
+                        "attendanceModal"
+                    );
+
+                if (
+                    event.target === modal
+                ) {
+
+                    closeAttendance();
+
+                }
+
+            }
+        );
+
+
+        /* =========================
+           MARK PRESENT
+        ========================= */
+
+        function markPresent(button) {
+
+            const parent =
+                button.parentElement;
+
+            const buttons =
+                parent.querySelectorAll(
+                    ".mark-btn"
+                );
+
+
+            buttons.forEach(
+                btn => {
+
+                    btn.classList.remove(
+                        "selected-present"
+                    );
+
+                    btn.classList.remove(
+                        "selected-absent"
+                    );
+
+                }
+            );
+
+
+            button.classList.add(
+                "selected-present"
+            );
+
+        }
+
+
+        /* =========================
+           MARK ABSENT
+        ========================= */
+
+        function markAbsent(button) {
+
+            const parent =
+                button.parentElement;
+
+            const buttons =
+                parent.querySelectorAll(
+                    ".mark-btn"
+                );
+
+
+            buttons.forEach(
+                btn => {
+
+                    btn.classList.remove(
+                        "selected-present"
+                    );
+
+                    btn.classList.remove(
+                        "selected-absent"
+                    );
+
+                }
+            );
+
+
+            button.classList.add(
+                "selected-absent"
+            );
+
+        }
+
+    </script>
+
+</body>
+</html>

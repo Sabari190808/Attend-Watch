@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AttendWatch | Admin Dashboard</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial, Helvetica, sans-serif;
+    background:#06111f;
+    color:#fff;
+    min-height:100vh;
+    overflow-x:hidden;
+}
+
+#cyberCanvas{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    z-index:-3;
+    background:#06111f;
+}
+
+.cyber-grid{
+    position:fixed;
+    inset:0;
+    z-index:-2;
+    pointer-events:none;
+    background-image:
+        linear-gradient(rgba(0,183,255,.035) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(0,183,255,.035) 1px,transparent 1px);
+    background-size:45px 45px;
+}
+
+.scan-line{
+    position:fixed;
+    left:0;
+    top:-5px;
+    width:100%;
+    height:2px;
+    z-index:-1;
+    background:rgba(0,195,255,.45);
+    box-shadow:0 0 18px rgba(0,195,255,.7);
+    animation:scan 6s linear infinite;
+    pointer-events:none;
+}
+
+@keyframes scan{
+    0%{top:0}
+    100%{top:100%}
+}
+
+.navbar{
+    width:100%;
+    padding:20px 6%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid rgba(64,190,255,.18);
+    background:rgba(4,16,30,.72);
+    backdrop-filter:blur(12px);
+}
+
+.brand{
+    font-size:22px;
+    font-weight:bold;
+}
+
+.brand span{
+    color:#20c8ff;
+}
+
+.nav-right{
+    display:flex;
+    align-items:center;
+    gap:24px;
+}
+
+.session{
+    color:#54d7ff;
+    font-size:13px;
+    letter-spacing:1px;
+}
+
+.logout{
+    text-decoration:none;
+    color:#fff;
+    border:1px solid rgba(80,200,255,.35);
+    padding:9px 17px;
+    border-radius:8px;
+    transition:.25s;
+}
+
+.logout:hover{
+    background:rgba(0,174,255,.12);
+    border-color:#21c9ff;
+}
+
+.container{
+    width:88%;
+    max-width:1250px;
+    margin:0 auto;
+    padding:55px 0 40px;
+}
+
+.portal-tag{
+    display:inline-block;
+    color:#18c7ff;
+    border:1px solid rgba(24,199,255,.35);
+    background:rgba(24,199,255,.06);
+    padding:8px 15px;
+    border-radius:20px;
+    font-size:12px;
+    letter-spacing:1.5px;
+    margin-bottom:18px;
+}
+
+h1{
+    font-size:42px;
+    margin-bottom:10px;
+}
+
+.subtitle{
+    color:#91aeca;
+    font-size:16px;
+    line-height:1.7;
+    max-width:780px;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+    margin:35px 0;
+}
+
+.card{
+    background:rgba(8,28,47,.78);
+    border:1px solid rgba(63,177,226,.22);
+    border-radius:14px;
+    padding:24px;
+    box-shadow:0 12px 35px rgba(0,0,0,.18);
+    backdrop-filter:blur(10px);
+}
+
+.stat-title{
+    color:#8da8c1;
+    font-size:13px;
+    margin-bottom:12px;
+}
+
+.stat-number{
+    font-size:31px;
+    font-weight:bold;
+}
+
+.stat-number span{
+    color:#1fc8ff;
+}
+
+.section-title{
+    font-size:21px;
+    margin-bottom:18px;
+}
+
+.actions{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+    margin-bottom:35px;
+}
+
+.action-card{
+    padding:25px;
+    border-radius:14px;
+    background:rgba(8,28,47,.78);
+    border:1px solid rgba(63,177,226,.22);
+}
+
+.action-icon{
+    font-size:28px;
+    margin-bottom:15px;
+}
+
+.action-card h3{
+    margin-bottom:9px;
+}
+
+.action-card p{
+    color:#8da8c1;
+    font-size:14px;
+    line-height:1.6;
+}
+
+.action-btn{
+    display:inline-block;
+    margin-top:17px;
+    padding:9px 14px;
+    border-radius:7px;
+    border:1px solid rgba(24,199,255,.4);
+    color:#39d0ff;
+    background:rgba(24,199,255,.06);
+    cursor:pointer;
+    transition:.25s;
+    text-decoration:none;
+}
+
+.action-btn:hover{
+    background:rgba(24,199,255,.15);
+}
+
+.table-card{
+    background:rgba(8,28,47,.78);
+    border:1px solid rgba(63,177,226,.22);
+    border-radius:14px;
+    padding:25px;
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    padding:15px 12px;
+    text-align:left;
+    border-bottom:1px solid rgba(130,180,210,.12);
+    font-size:14px;
+}
+
+th{
+    color:#55d7ff;
+    font-size:12px;
+    letter-spacing:1px;
+}
+
+td{
+    color:#d5e6f2;
+}
+
+.status-good{
+    color:#45e6a3;
+}
+
+.status-warning{
+    color:#ffcc57;
+}
+
+.security{
+    margin-top:30px;
+    padding:22px 25px;
+    border:1px solid rgba(69,230,163,.22);
+    background:rgba(35,150,105,.06);
+    border-radius:14px;
+}
+
+.security-title{
+    font-size:17px;
+    margin-bottom:8px;
+}
+
+.security p{
+    color:#91aeca;
+    font-size:14px;
+}
+
+footer{
+    text-align:center;
+    padding:35px 20px;
+    color:#66829b;
+    font-size:13px;
+    border-top:1px solid rgba(64,190,255,.12);
+    margin-top:45px;
+}
+
+footer strong{
+    color:#b9d3e6;
+}
+
+@media(max-width:900px){
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .actions{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:600px){
+    .navbar{
+        padding:17px 5%;
+    }
+
+    .session{
+        display:none;
+    }
+
+    .container{
+        width:92%;
+        padding-top:35px;
+    }
+
+    h1{
+        font-size:32px;
+    }
+
+    .stats{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="cyberCanvas"></canvas>
+<div class="cyber-grid"></div>
+<div class="scan-line"></div>
+
+<nav class="navbar">
+
+    <div class="brand">
+        🛡️ Attend<span>Watch</span>
+    </div>
+
+    <div class="nav-right">
+        <div class="session">
+            Secure Admin Session
+        </div>
+
+        <a href="login.html" class="logout">
+            Logout →
+        </a>
+    </div>
+
+</nav>
+
+<main class="container">
+
+    <div class="portal-tag">
+        ADMINISTRATOR PORTAL
+    </div>
+
+    <h1>
+        Welcome back, Administrator 👋
+    </h1>
+
+    <p class="subtitle">
+        Manage students, faculty, subjects, attendance records,
+        access control, and security monitoring securely from your
+        administrator dashboard.
+    </p>
+
+    <!-- STATISTICS -->
+
+    <div class="stats">
+
+        <div class="card">
+            <div class="stat-title">
+                TOTAL STUDENTS
+            </div>
+
+            <div class="stat-number">
+                60
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="stat-title">
+                TOTAL FACULTY
+            </div>
+
+            <div class="stat-number">
+                12
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="stat-title">
+                TOTAL SUBJECTS
+            </div>
+
+            <div class="stat-number">
+                18
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="stat-title">
+                ATTENDANCE AVERAGE
+            </div>
+
+            <div class="stat-number">
+                82<span>%</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ADMIN CONTROLS -->
+
+    <h2 class="section-title">
+        Administrator Controls
+    </h2>
+
+    <div class="actions">
+
+        <!-- USER MANAGEMENT -->
+
+        <div class="action-card">
+
+            <div class="action-icon">
+                👥
+            </div>
+
+            <h3>
+                User Management
+            </h3>
+
+            <p>
+                Manage student and faculty accounts,
+                access roles, and account status.
+            </p>
+
+            <a href="admin-user-management.html"
+               class="action-btn">
+                Manage Users →
+            </a>
+
+        </div>
+
+        <!-- SUBJECTS -->
+
+        <div class="action-card">
+
+            <div class="action-icon">
+                📚
+            </div>
+
+            <h3>
+                Subjects & Classes
+            </h3>
+
+            <p>
+                Monitor subjects, assigned classes,
+                and academic course information.
+            </p>
+
+            <a href="admin-subjects-classes.html"
+               class="action-btn">
+                Manage Classes →
+            </a>
+
+        </div>
+
+        <!-- ATTENDANCE -->
+
+        <div class="action-card">
+
+            <div class="action-icon">
+                📊
+            </div>
+
+            <h3>
+                Attendance Monitoring
+            </h3>
+
+            <p>
+                View overall attendance, identify shortage
+                students, and monitor attendance activity.
+            </p>
+
+            <a href="admin-attendance-monitoring.html"
+               class="action-btn">
+                View Attendance →
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- SYSTEM OVERVIEW -->
+
+    <h2 class="section-title">
+        System Overview
+    </h2>
+
+    <div class="table-card">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>MODULE</th>
+                    <th>STATUS</th>
+                    <th>DESCRIPTION</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>
+                        User Management
+                    </td>
+
+                    <td class="status-good">
+                        ● ACTIVE
+                    </td>
+
+                    <td>
+                        Student and faculty access control
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        Attendance System
+                    </td>
+
+                    <td class="status-good">
+                        ● ACTIVE
+                    </td>
+
+                    <td>
+                        Attendance monitoring and records
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        Shortage Monitoring
+                    </td>
+
+                    <td class="status-warning">
+                        ● MONITORING
+                    </td>
+
+                    <td>
+                        Students below minimum attendance
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        Security & Audit
+                    </td>
+
+                    <td class="status-good">
+                        ● SECURE
+                    </td>
+
+                    <td>
+                        System access and activity monitoring
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- SECURITY -->
+
+    <div class="security">
+
+        <div class="security-title">
+            🔐 Administrator Account Security
+        </div>
+
+        <p>
+            Session protection enabled
+            &nbsp; • &nbsp;
+            <span class="status-good">
+                ● SECURE
+            </span>
+        </p>
+
+    </div>
+
+</main>
+
+<footer>
+
+    <strong>
+        🛡️ AttendWatch
+    </strong>
+
+    <br>
+
+    Secure Attendance. Smarter Monitoring.
+
+    <br><br>
+
+    © 2026 AttendWatch | Cyber Security Mini Project
+
+</footer>
+
+<script>
+
+const canvas =
+    document.getElementById("cyberCanvas");
+
+const ctx =
+    canvas.getContext("2d");
+
+let particles = [];
+
+let mouse = {
+    x: null,
+    y: null,
+    radius: 150
+};
+
+function resizeCanvas(){
+
+    canvas.width =
+        window.innerWidth;
+
+    canvas.height =
+        window.innerHeight;
+}
+
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+resizeCanvas();
+
+const particleCount =
+    Math.min(
+        95,
+        Math.floor(
+            (window.innerWidth *
+             window.innerHeight) / 13000
+        )
+    );
+
+for(let i = 0; i < particleCount; i++){
+
+    particles.push({
+
+        x:
+            Math.random() *
+            canvas.width,
+
+        y:
+            Math.random() *
+            canvas.height,
+
+        vx:
+            (Math.random() - 0.5) *
+            0.45,
+
+        vy:
+            (Math.random() - 0.5) *
+            0.45,
+
+        size:
+            Math.random() * 2 + 0.7
+
+    });
+}
+
+window.addEventListener(
+    "mousemove",
+    function(e){
+
+        mouse.x =
+            e.clientX;
+
+        mouse.y =
+            e.clientY;
+
+    }
+);
+
+window.addEventListener(
+    "mouseleave",
+    function(){
+
+        mouse.x = null;
+        mouse.y = null;
+
+    }
+);
+
+function draw(){
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    for(let i = 0;
+        i < particles.length;
+        i++){
+
+        const p =
+            particles[i];
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if(
+            p.x < 0 ||
+            p.x > canvas.width
+        ){
+            p.vx *= -1;
+        }
+
+        if(
+            p.y < 0 ||
+            p.y > canvas.height
+        ){
+            p.vy *= -1;
+        }
+
+        if(
+            mouse.x !== null &&
+            mouse.y !== null
+        ){
+
+            const dx =
+                mouse.x - p.x;
+
+            const dy =
+                mouse.y - p.y;
+
+            const distance =
+                Math.sqrt(
+                    dx * dx +
+                    dy * dy
+                );
+
+            if(
+                distance <
+                mouse.radius
+            ){
+
+                p.x -=
+                    dx * 0.002;
+
+                p.y -=
+                    dy * 0.002;
+            }
+        }
+
+        ctx.beginPath();
+
+        ctx.arc(
+            p.x,
+            p.y,
+            p.size,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fillStyle =
+            "rgba(40,190,255,0.75)";
+
+        ctx.fill();
+    }
+
+    for(let i = 0;
+        i < particles.length;
+        i++){
+
+        for(let j = i + 1;
+            j < particles.length;
+            j++){
+
+            const dx =
+                particles[i].x -
+                particles[j].x;
+
+            const dy =
+                particles[i].y -
+                particles[j].y;
+
+            const distance =
+                Math.sqrt(
+                    dx * dx +
+                    dy * dy
+                );
+
+            if(distance < 125){
+
+                ctx.beginPath();
+
+                ctx.moveTo(
+                    particles[i].x,
+                    particles[i].y
+                );
+
+                ctx.lineTo(
+                    particles[j].x,
+                    particles[j].y
+                );
+
+                ctx.strokeStyle =
+                    "rgba(0,174,255," +
+                    ((1 - distance / 125) * 0.25) +
+                    ")";
+
+                ctx.lineWidth = 1;
+
+                ctx.stroke();
+            }
+        }
+    }
+
+    requestAnimationFrame(draw);
+}
+
+draw();
+
+</script>
+
+</body>
+</html>

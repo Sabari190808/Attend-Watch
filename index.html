@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AttendWatch | Secure Attendance</title>
+
+    <style>
+
+        /* =========================
+           RESET
+        ========================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #07111f;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            width: 100%;
+            height: 75px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 7%;
+
+            background: rgba(7, 17, 31, 0.95);
+
+            border-bottom: 1px solid #18304d;
+
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+        }
+
+        .navbar nav {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .navbar nav a {
+            color: #b8c7d9;
+            font-size: 15px;
+
+            transition: 0.3s;
+        }
+
+        .navbar nav a:hover {
+            color: #36d9ff;
+        }
+
+        .nav-login {
+            background: #1689d7;
+            color: white !important;
+
+            padding: 10px 22px;
+            border-radius: 8px;
+        }
+
+        .nav-login:hover {
+            background: #36d9ff;
+            color: #07111f !important;
+        }
+
+
+
+        /* =========================
+           ANIMATED CYBER BACKGROUND
+           (Hero section only)
+        ========================= */
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        .hero > *:not(.cyber-bg) {
+            position: relative;
+            z-index: 5;
+        }
+
+        .cyber-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at 72% 48%, rgba(0, 150, 255, 0.15), transparent 25%),
+                radial-gradient(circle at 20% 50%, rgba(0, 110, 255, 0.10), transparent 30%),
+                linear-gradient(135deg, #020711 0%, #061426 48%, #020812 100%);
+        }
+
+        #cyberCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.85;
+        }
+
+        .cyber-grid {
+            position: absolute;
+            left: -15%;
+            bottom: -48%;
+            width: 130%;
+            height: 95%;
+            background-image:
+                linear-gradient(rgba(0, 153, 255, 0.12) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 153, 255, 0.12) 1px, transparent 1px);
+            background-size: 65px 65px;
+            transform: perspective(500px) rotateX(64deg);
+            transform-origin: center top;
+            opacity: 0.55;
+            animation: cyberGridMove 7s linear infinite;
+            -webkit-mask-image: linear-gradient(to top, black, transparent 82%);
+            mask-image: linear-gradient(to top, black, transparent 82%);
+        }
+
+        @keyframes cyberGridMove {
+            from {
+                transform: perspective(500px) rotateX(64deg) translateY(0);
+            }
+            to {
+                transform: perspective(500px) rotateX(64deg) translateY(65px);
+            }
+        }
+
+        .cyber-scan {
+            position: absolute;
+            left: 0;
+            top: -5%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(0, 140, 255, 0.12),
+                #00aaff,
+                #00eaff,
+                #00aaff,
+                rgba(0, 140, 255, 0.12),
+                transparent
+            );
+            box-shadow: 0 0 10px #008cff, 0 0 28px rgba(0, 153, 255, 0.75);
+            opacity: 0.65;
+            animation: cyberScan 6.5s linear infinite;
+        }
+
+        @keyframes cyberScan {
+            from { top: -5%; }
+            to { top: 105%; }
+        }
+
+        .binary-stream {
+            position: absolute;
+            top: -180px;
+            color: rgba(0, 174, 255, 0.22);
+            font-family: "Courier New", monospace;
+            font-size: 11px;
+            line-height: 20px;
+            letter-spacing: 2px;
+            white-space: pre;
+            text-shadow: 0 0 9px rgba(0, 153, 255, 0.65);
+            animation: binaryFall linear infinite;
+        }
+
+        .binary-stream:nth-of-type(1) { left: 4%;  animation-duration: 12s; }
+        .binary-stream:nth-of-type(2) { left: 16%; animation-duration: 9s; animation-delay: -3s; }
+        .binary-stream:nth-of-type(3) { left: 31%; animation-duration: 14s; animation-delay: -7s; }
+        .binary-stream:nth-of-type(4) { left: 47%; animation-duration: 10s; animation-delay: -5s; }
+        .binary-stream:nth-of-type(5) { left: 62%; animation-duration: 13s; animation-delay: -2s; }
+        .binary-stream:nth-of-type(6) { left: 78%; animation-duration: 11s; animation-delay: -8s; }
+        .binary-stream:nth-of-type(7) { left: 91%; animation-duration: 15s; animation-delay: -4s; }
+
+        @keyframes binaryFall {
+            0% { transform: translateY(-180px); opacity: 0; }
+            12% { opacity: 0.55; }
+            78% { opacity: 0.28; }
+            100% { transform: translateY(850px); opacity: 0; }
+        }
+
+        /* Glowing cyber shield on the right */
+        .cyber-shield-core {
+            position: absolute;
+            right: 10%;
+            top: 50%;
+            width: 300px;
+            height: 300px;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.72;
+        }
+
+        .shield-ring {
+            position: absolute;
+            inset: 8px;
+            border: 1px solid rgba(0, 178, 255, 0.35);
+            border-radius: 50%;
+            box-shadow: 0 0 35px rgba(0, 136, 255, 0.14);
+            animation: shieldRotate 16s linear infinite;
+        }
+
+        .shield-ring::before {
+            content: "";
+            position: absolute;
+            inset: 30px;
+            border: 1px dashed rgba(0, 204, 255, 0.32);
+            border-radius: 50%;
+            animation: shieldRotateReverse 11s linear infinite;
+        }
+
+        .shield-ring::after {
+            content: "";
+            position: absolute;
+            inset: 58px;
+            border: 1px solid rgba(0, 153, 255, 0.22);
+            border-radius: 50%;
+        }
+
+        @keyframes shieldRotate {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes shieldRotateReverse {
+            to { transform: rotate(-360deg); }
+        }
+
+        .shield-shape {
+            position: relative;
+            width: 105px;
+            height: 125px;
+            clip-path: polygon(50% 0%, 92% 15%, 85% 68%, 50% 100%, 15% 68%, 8% 15%);
+            background: linear-gradient(145deg, rgba(0, 188, 255, 0.35), rgba(0, 75, 180, 0.12));
+            border: 2px solid #00bfff;
+            filter: drop-shadow(0 0 16px rgba(0, 170, 255, 0.75));
+            animation: shieldPulse 2.6s ease-in-out infinite;
+        }
+
+        .shield-shape::before {
+            content: "🔒";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 36px;
+            filter: drop-shadow(0 0 10px #00d9ff);
+        }
+
+        @keyframes shieldPulse {
+            0%, 100% { transform: scale(1); opacity: 0.72; }
+            50% { transform: scale(1.07); opacity: 1; }
+        }
+
+        .shield-label {
+            position: absolute;
+            color: #38d8ff;
+            font: 9px "Courier New", monospace;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px #008cff;
+        }
+
+        .shield-label.top {
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .shield-label.bottom {
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .shield-label.left {
+            left: -22px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+        }
+
+        .shield-label.right {
+            right: -22px;
+            top: 50%;
+            transform: translateY(-50%) rotate(90deg);
+        }
+
+        .cyber-vignette {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 28%, rgba(0,0,0,0.62) 100%);
+        }
+
+        @media (max-width: 1000px) {
+            .cyber-shield-core {
+                right: -55px;
+                opacity: 0.35;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .cyber-shield-core {
+                right: -100px;
+                top: 65%;
+                transform: translateY(-50%) scale(0.8);
+                opacity: 0.22;
+            }
+
+            .binary-stream {
+                font-size: 9px;
+            }
+        }
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            min-height: 650px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 70px;
+
+            padding: 80px 7%;
+
+            background: transparent;
+        }
+
+        .hero-content {
+            max-width: 650px;
+        }
+
+        .security-badge {
+            display: inline-block;
+
+            padding: 8px 15px;
+
+            border: 1px solid #1e557d;
+            border-radius: 30px;
+
+            color: #4bdfff;
+            background: rgba(19, 82, 120, 0.18);
+
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+
+        .hero h1 {
+            font-size: clamp(42px, 5vw, 68px);
+
+            line-height: 1.08;
+
+            margin-bottom: 25px;
+        }
+
+        .hero h1 span {
+            display: block;
+            color: #36d9ff;
+        }
+
+        .hero p {
+            color: #9eb1c7;
+            font-size: 17px;
+
+            max-width: 600px;
+
+            margin-bottom: 35px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 13px 25px;
+
+            border-radius: 8px;
+
+            font-weight: bold;
+
+            transition: 0.3s;
+        }
+
+        .primary-btn {
+            background: #1689d7;
+        }
+
+        .primary-btn:hover {
+            background: #36d9ff;
+            color: #06101d;
+            transform: translateY(-2px);
+        }
+
+        .secondary-btn {
+            border: 1px solid #31516e;
+            color: #c8d7e8;
+        }
+
+        .secondary-btn:hover {
+            border-color: #36d9ff;
+            color: #36d9ff;
+        }
+
+
+        /* =========================
+           DASHBOARD PREVIEW
+        ========================= */
+
+        .dashboard-preview {
+            width: 450px;
+
+            padding: 25px;
+
+            background: #0c1c2e;
+
+            border: 1px solid #1c3b59;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.45);
+
+            transform: perspective(1000px) rotateY(-4deg);
+        }
+
+        .preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 25px;
+        }
+
+        .preview-header small {
+            color: #6f879f;
+            font-size: 10px;
+            letter-spacing: 2px;
+        }
+
+        .preview-header h3 {
+            margin-top: 5px;
+            font-size: 19px;
+        }
+
+        .online-dot {
+            color: #32e6a1;
+            font-size: 22px;
+        }
+
+        .preview-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .preview-card {
+            padding: 18px;
+
+            background: #10263c;
+
+            border: 1px solid #1c3d5a;
+
+            border-radius: 12px;
+        }
+
+        .preview-card span {
+            display: block;
+
+            color: #8fa6bb;
+
+            font-size: 12px;
+
+            margin-bottom: 7px;
+        }
+
+        .preview-card strong {
+            display: block;
+
+            font-size: 27px;
+
+            margin-bottom: 5px;
+        }
+
+        .preview-card small {
+            color: #71879b;
+        }
+
+        .preview-card .good {
+            color: #32e6a1;
+        }
+
+        .attendance-bar {
+            margin-top: 25px;
+        }
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+
+            color: #a7bacd;
+
+            font-size: 13px;
+
+            margin-bottom: 9px;
+        }
+
+        .bar {
+            height: 9px;
+
+            background: #1a3045;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            width: 82%;
+            height: 100%;
+
+            background: linear-gradient(
+                90deg,
+                #1689d7,
+                #36d9ff
+            );
+
+            border-radius: 20px;
+        }
+
+
+        /* =========================
+           FEATURES
+        ========================= */
+
+        .features {
+            padding: 100px 7%;
+
+            background: #091827;
+        }
+
+        .section-heading {
+            max-width: 700px;
+
+            margin: 0 auto 60px;
+
+            text-align: center;
+        }
+
+        .section-tag {
+            color: #36d9ff;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+            letter-spacing: 3px;
+        }
+
+        .section-heading h2 {
+            font-size: 40px;
+
+            line-height: 1.2;
+
+            margin: 15px 0;
+        }
+
+        .section-heading h2 span {
+            color: #36d9ff;
+        }
+
+        .section-heading p {
+            color: #8fa5ba;
+        }
+
+        .feature-grid {
+            max-width: 1100px;
+
+            margin: auto;
+
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 25px;
+        }
+
+        .feature-card {
+            padding: 32px;
+
+            background: #0c1c2e;
+
+            border: 1px solid #19364f;
+
+            border-radius: 15px;
+
+            transition: 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-7px);
+
+            border-color: #36d9ff;
+
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-icon {
+            width: 55px;
+            height: 55px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 12px;
+
+            font-size: 25px;
+
+            margin-bottom: 22px;
+        }
+
+        .blue {
+            background: rgba(22, 137, 215, 0.18);
+        }
+
+        .cyan {
+            background: rgba(54, 217, 255, 0.12);
+        }
+
+        .green {
+            background: rgba(50, 230, 161, 0.12);
+        }
+
+        .feature-card h3 {
+            font-size: 20px;
+
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            color: #8ea4b9;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           HOW IT WORKS
+        ========================= */
+
+        .how-it-works {
+            padding: 100px 7%;
+
+            background: #07111f;
+        }
+
+        .steps {
+            max-width: 1100px;
+
+            margin: auto;
+
+            display: grid;
+
+            grid-template-columns:
+                1fr auto 1fr auto 1fr auto 1fr;
+
+            align-items: center;
+
+            gap: 15px;
+        }
+
+        .step {
+            text-align: center;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin: 0 auto 18px;
+
+            border-radius: 50%;
+
+            background: #102d46;
+
+            border: 1px solid #26709b;
+
+            color: #36d9ff;
+
+            font-weight: bold;
+        }
+
+        .step h3 {
+            margin-bottom: 10px;
+        }
+
+        .step p {
+            color: #839bb0;
+
+            font-size: 13px;
+        }
+
+        .step-line {
+            width: 35px;
+            height: 1px;
+
+            background: #24506e;
+        }
+
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            padding: 40px 7%;
+
+            text-align: center;
+
+            background: #050d17;
+
+            border-top: 1px solid #162b40;
+        }
+
+        .footer-logo {
+            font-size: 20px;
+            font-weight: bold;
+
+            margin-bottom: 8px;
+        }
+
+        footer p {
+            color: #71879d;
+
+            font-size: 14px;
+
+            margin-bottom: 12px;
+        }
+
+        footer span {
+            color: #50667b;
+
+            font-size: 12px;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1000px) {
+
+            .hero {
+                flex-direction: column;
+
+                text-align: center;
+            }
+
+            .hero-content {
+                max-width: 800px;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .dashboard-preview {
+                width: min(100%, 500px);
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+            }
+
+            .steps {
+                grid-template-columns: 1fr;
+                gap: 35px;
+            }
+
+            .step-line {
+                display: none;
+            }
+        }
+
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                padding: 0 5%;
+            }
+
+            .navbar nav a:not(.nav-login) {
+                display: none;
+            }
+
+            .hero {
+                padding: 60px 5%;
+            }
+
+            .hero h1 {
+                font-size: 42px;
+            }
+
+            .dashboard-preview {
+                transform: none;
+            }
+
+            .preview-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .features,
+            .how-it-works {
+                padding: 70px 5%;
+            }
+
+            .section-heading h2 {
+                font-size: 32px;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <header class="navbar">
+
+        <div class="logo">
+            <span class="logo-icon">🛡️</span>
+            <span>AttendWatch</span>
+        </div>
+
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#features">Features</a>
+            <a href="#about">About</a>
+            <a href="login.html" class="nav-login">Login</a>
+        </nav>
+
+    </header>
+
+
+    <!-- ================= HERO ================= -->
+
+    <section class="hero" id="home">
+
+        <!-- Animated cyber-security background ONLY -->
+        <div class="cyber-bg" aria-hidden="true">
+
+            <canvas id="cyberCanvas"></canvas>
+
+            <div class="cyber-grid"></div>
+            <div class="cyber-scan"></div>
+
+            <div class="binary-stream">01001011
+10110100
+11001010
+00110101
+10101001
+01011100
+11100010</div>
+
+            <div class="binary-stream">11010010
+01010110
+10100101
+11101001
+00110110
+11001011
+01001101</div>
+
+            <div class="binary-stream">00101101
+11010101
+10101010
+01100110
+11110001
+00110011
+10101100</div>
+
+            <div class="binary-stream">10101101
+01010011
+11100101
+00110101
+11001010
+01001111
+10110101</div>
+
+            <div class="binary-stream">01100110
+10101010
+00110111
+11001100
+10110010
+01010101
+11100010</div>
+
+            <div class="binary-stream">11001010
+10100101
+01110110
+01011001
+11101010
+00110010
+10101011</div>
+
+            <div class="binary-stream">10110010
+01001010
+11100110
+00101101
+11010100
+10101001
+01100011</div>
+
+            <div class="cyber-shield-core">
+                <div class="shield-ring"></div>
+                <div class="shield-shape"></div>
+                <span class="shield-label top">SECURE_NODE</span>
+                <span class="shield-label bottom">ENCRYPTED</span>
+                <span class="shield-label left">FIREWALL</span>
+                <span class="shield-label right">ACTIVE</span>
+            </div>
+
+            <div class="cyber-vignette"></div>
+        </div>
+
+        <div class="hero-content">
+
+            <div class="security-badge">
+                🔐 Cyber Security Based Attendance System
+            </div>
+
+            <h1>
+                Secure Attendance.
+                <span>Smarter Monitoring.</span>
+            </h1>
+
+            <p>
+                AttendWatch is a secure web-based attendance monitoring
+                system designed to track attendance, identify shortages,
+                and protect academic records.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="login.html" class="btn primary-btn">
+                    Get Started →
+                </a>
+
+                <a href="#features" class="btn secondary-btn">
+                    Explore Features
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- Dashboard Preview -->
+
+        <div class="dashboard-preview">
+
+            <div class="preview-header">
+
+                <div>
+                    <small>ATTENDANCE OVERVIEW</small>
+                    <h3>Student Dashboard</h3>
+                </div>
+
+                <span class="online-dot">●</span>
+
+            </div>
+
+
+            <div class="preview-cards">
+
+                <div class="preview-card">
+
+                    <span>Overall Attendance</span>
+
+                    <strong>82%</strong>
+
+                    <small class="good">
+                        ● Good Standing
+                    </small>
+
+                </div>
+
+
+                <div class="preview-card">
+
+                    <span>Classes Attended</span>
+
+                    <strong>49 / 60</strong>
+
+                    <small>
+                        Current Semester
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="attendance-bar">
+
+                <div class="bar-label">
+                    <span>Attendance Progress</span>
+                    <span>82%</span>
+                </div>
+
+                <div class="bar">
+                    <div class="bar-fill"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= FEATURES ================= -->
+
+    <section class="features" id="features">
+
+        <div class="section-heading">
+
+            <span class="section-tag">
+                CORE FEATURES
+            </span>
+
+            <h2>
+                Everything you need to
+                <span>manage attendance securely.</span>
+            </h2>
+
+            <p>
+                AttendWatch combines attendance management
+                with essential cyber security principles.
+            </p>
+
+        </div>
+
+
+        <div class="feature-grid">
+
+            <div class="feature-card">
+
+                <div class="feature-icon blue">
+                    🔐
+                </div>
+
+                <h3>
+                    Secure Access
+                </h3>
+
+                <p>
+                    Role-Based Access Control ensures that
+                    Students, Faculty, and Admins access only
+                    the features assigned to their roles.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon cyan">
+                    📊
+                </div>
+
+                <h3>
+                    Smart Attendance
+                </h3>
+
+                <p>
+                    Automatically calculate attendance percentage
+                    and identify students who fall below the
+                    configured attendance threshold.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon green">
+                    🛡️
+                </div>
+
+                <h3>
+                    Audit & Accountability
+                </h3>
+
+                <p>
+                    Security-sensitive actions are recorded with
+                    user identity, action, timestamp, and IP address.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= HOW IT WORKS ================= -->
+
+    <section class="how-it-works" id="about">
+
+        <div class="section-heading">
+
+            <span class="section-tag">
+                HOW IT WORKS
+            </span>
+
+            <h2>
+                Simple process.
+                <span>Secure system.</span>
+            </h2>
+
+        </div>
+
+
+        <div class="steps">
+
+            <div class="step">
+
+                <div class="step-number">
+                    01
+                </div>
+
+                <h3>
+                    Login
+                </h3>
+
+                <p>
+                    Users securely log in and are identified
+                    by their assigned role.
+                </p>
+
+            </div>
+
+
+            <div class="step-line"></div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    02
+                </div>
+
+                <h3>
+                    Track Attendance
+                </h3>
+
+                <p>
+                    Faculty members mark attendance for
+                    their assigned courses.
+                </p>
+
+            </div>
+
+
+            <div class="step-line"></div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    03
+                </div>
+
+                <h3>
+                    Detect Shortage
+                </h3>
+
+                <p>
+                    Attendance below 75% is automatically
+                    flagged as shortage.
+                </p>
+
+            </div>
+
+
+            <div class="step-line"></div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    04
+                </div>
+
+                <h3>
+                    Monitor Security
+                </h3>
+
+                <p>
+                    Important actions are recorded in
+                    the audit log.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer>
+
+        <div class="footer-logo">
+            🛡️ AttendWatch
+        </div>
+
+        <p>
+            Secure Attendance. Smarter Monitoring.
+        </p>
+
+        <span>
+            © 2026 AttendWatch | Cyber Security Mini Project
+        </span>
+
+    </footer>
+
+
+
+    <script>
+        /* =====================================================
+           CYBER NETWORK BACKGROUND
+           This script affects ONLY the hero background.
+        ===================================================== */
+
+        const cyberCanvas = document.getElementById("cyberCanvas");
+        const cyberCtx = cyberCanvas.getContext("2d");
+
+        let cyberW = 0;
+        let cyberH = 0;
+
+        const cyberMouse = { x: null, y: null };
+        const cyberParticles = [];
+
+        function resizeCyberCanvas() {
+            const rect = cyberCanvas.getBoundingClientRect();
+            cyberW = cyberCanvas.width = Math.floor(rect.width);
+            cyberH = cyberCanvas.height = Math.floor(rect.height);
+        }
+
+        function createCyberParticles() {
+            cyberParticles.length = 0;
+
+            const count = window.innerWidth < 700 ? 45 : 95;
+
+            for (let i = 0; i < count; i++) {
+                cyberParticles.push({
+                    x: Math.random() * cyberW,
+                    y: Math.random() * cyberH,
+                    vx: (Math.random() - 0.5) * 0.28,
+                    vy: (Math.random() - 0.5) * 0.28,
+                    r: Math.random() * 1.5 + 0.5,
+                    phase: Math.random() * Math.PI * 2
+                });
+            }
+        }
+
+        function resizeCyber() {
+            resizeCyberCanvas();
+            createCyberParticles();
+        }
+
+        window.addEventListener("resize", resizeCyber);
+
+        cyberCanvas.parentElement.addEventListener("mousemove", (event) => {
+            const rect = cyberCanvas.getBoundingClientRect();
+            cyberMouse.x = event.clientX - rect.left;
+            cyberMouse.y = event.clientY - rect.top;
+        });
+
+        cyberCanvas.parentElement.addEventListener("mouseleave", () => {
+            cyberMouse.x = null;
+            cyberMouse.y = null;
+        });
+
+        resizeCyber();
+
+        function drawCyberParticles() {
+            for (const p of cyberParticles) {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.phase += 0.025;
+
+                if (p.x < -10) p.x = cyberW + 10;
+                if (p.x > cyberW + 10) p.x = -10;
+                if (p.y < -10) p.y = cyberH + 10;
+                if (p.y > cyberH + 10) p.y = -10;
+
+                if (cyberMouse.x !== null) {
+                    const dx = cyberMouse.x - p.x;
+                    const dy = cyberMouse.y - p.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 120 && distance > 0) {
+                        const force = (120 - distance) / 120;
+                        p.x -= (dx / distance) * force * 0.22;
+                        p.y -= (dy / distance) * force * 0.22;
+                    }
+                }
+
+                const alpha = 0.38 + Math.sin(p.phase) * 0.20;
+
+                cyberCtx.beginPath();
+                cyberCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                cyberCtx.fillStyle = `rgba(0, 190, 255, ${alpha})`;
+                cyberCtx.shadowBlur = 10;
+                cyberCtx.shadowColor = "#008cff";
+                cyberCtx.fill();
+            }
+        }
+
+        function drawCyberConnections() {
+            const maxDistance = window.innerWidth < 700 ? 80 : 115;
+
+            for (let i = 0; i < cyberParticles.length; i++) {
+                for (let j = i + 1; j < cyberParticles.length; j++) {
+                    const a = cyberParticles[i];
+                    const b = cyberParticles[j];
+
+                    const dx = a.x - b.x;
+                    const dy = a.y - b.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < maxDistance) {
+                        const alpha = (1 - distance / maxDistance) * 0.18;
+
+                        cyberCtx.beginPath();
+                        cyberCtx.moveTo(a.x, a.y);
+                        cyberCtx.lineTo(b.x, b.y);
+                        cyberCtx.strokeStyle = `rgba(0, 145, 255, ${alpha})`;
+                        cyberCtx.lineWidth = 0.7;
+                        cyberCtx.stroke();
+                    }
+                }
+            }
+        }
+
+        function drawMouseConnections() {
+            if (cyberMouse.x === null) return;
+
+            for (const p of cyberParticles) {
+                const dx = cyberMouse.x - p.x;
+                const dy = cyberMouse.y - p.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < 155) {
+                    const alpha = (1 - distance / 155) * 0.32;
+
+                    cyberCtx.beginPath();
+                    cyberCtx.moveTo(cyberMouse.x, cyberMouse.y);
+                    cyberCtx.lineTo(p.x, p.y);
+                    cyberCtx.strokeStyle = `rgba(0, 215, 255, ${alpha})`;
+                    cyberCtx.lineWidth = 1;
+                    cyberCtx.stroke();
+                }
+            }
+        }
+
+        function animateCyberBackground() {
+            cyberCtx.clearRect(0, 0, cyberW, cyberH);
+
+            drawCyberConnections();
+            drawMouseConnections();
+            drawCyberParticles();
+
+            requestAnimationFrame(animateCyberBackground);
+        }
+
+        animateCyberBackground();
+    </script>
+
+</body>
+</html>
